@@ -3,8 +3,9 @@ services:
     build: .
     container_name: php-app
     working_dir: /var/www/symfony
-    volumes:  
-      - ./symfony:/var/www/symfony 
+    volumes:
+      - ./symfony:/var/www/symfony
+      - ./.docker/vhost.conf:/etc/apache2/sites-enabled/000-default.conf
     ports:
       - "8000:80"
     environment:
