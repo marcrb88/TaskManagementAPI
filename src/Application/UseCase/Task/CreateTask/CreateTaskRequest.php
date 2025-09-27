@@ -1,56 +1,21 @@
 <?php
 
-namespace App\Domain\Model;
+namespace App\Application\UseCase\Task\CreateTask;
 
-use Doctrine\ORM\Mapping as ORM;
+use DateTime;
 use App\Domain\ValueObject\Status;
 use App\Domain\ValueObject\Priority;
-use DateTime;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="tasks")
- */
-class Task
+class CreateTaskRequest
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="uuid")
-     * @ORM\GeneratedValue(strategy: 'UUID')
-     */
-    private string $id;
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private string $title;
-    /**
-     * @ORM\Column(type="text")
-     */
-    private string $description;
-    /**
-     * @ORM\Column(type="string", length=20)
-     */
+    public string $title;
+    public string $description;
     private Status $status = Status::Pending;
-    /**
-     * @ORM\Column(type="string", length=10)
-     */
     private Priority $priority = Priority::Low;
-    /**
-     * @ORM\Column(type="string", length=36, nullable=true)
-     */
     private ?string $assignedTo = null;
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private DateTime $dueDate;
-    /**
-     * @ORM\Column(type="datetime")
-     */
+    public DateTime $dueDate;
     private DateTime $createdAt;
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private ?DateTime $updatedAt = null;
+    private DateTime $updatedAt;
 
     public function __construct
     (
@@ -64,28 +29,20 @@ class Task
         $this->dueDate = $dueDate;
     }
 
-    public function getId(): string
-    {
-        return $this->id;
-    }
-
     public function getTitle(): string
     {
         return $this->title;
     }
-
     public function setTitle(string $title): self
     {
         $this->title = $title;
 
         return $this;
     }
-
     public function getDescription(): string
     {
         return $this->description;
     }
-
     public function setDescription(string $description): self
     {
         $this->description = $description;
@@ -99,7 +56,7 @@ class Task
     public function setStatus(Status $status): self
     {
         $this->status = $status;
-
+        
         return $this;
     }
     public function getPriority(): Priority
@@ -116,9 +73,10 @@ class Task
     {
         return $this->assignedTo;
     }
-    public function setAssignedTo(?string $assignedTo = null): self
+    public function setAssignedTo(?string $assignedTo): self
     {
         $this->assignedTo = $assignedTo;
+
         return $this;
     }
     public function getDueDate(): DateTime
@@ -141,7 +99,7 @@ class Task
 
         return $this;
     }
-    public function getUpdatedAt(): ?DateTime
+    public function getUpdatedAt(): DateTime
     {
         return $this->updatedAt;
     }
