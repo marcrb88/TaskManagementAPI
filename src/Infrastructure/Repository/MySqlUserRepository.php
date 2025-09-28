@@ -36,4 +36,9 @@ class MySqlUserRepository implements UserRepositoryInterface
         $this->entityManager->remove($user);
         $this->entityManager->flush();
     }
+    
+    public function findByEmail(string $email): ?User
+    {
+        return $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
+    }
 }

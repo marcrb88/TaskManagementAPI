@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Application\UseCase\Task\CreateTask;
+namespace App\Application\UseCase\User\CreateUser;
 
 use App\Application\Response\BaseResponse;
-use App\Domain\Model\Task;
+use App\Domain\Model\User;
 
-class CreateTaskResponse extends BaseResponse
+class CreateUserResponse extends BaseResponse
 {
-    private ?Task $task = null;
+    private ?User $user = null;
     private int $codeStatus;
 
     public function __construct(string $message)
@@ -15,13 +15,13 @@ class CreateTaskResponse extends BaseResponse
         parent::__construct($message);
     }
 
-    public function getTask(): ?Task
+    public function getUser(): ?User
     {
-        return $this->task;
+        return $this->user;
     }
-    public function setTask(?Task $task = null): self
+    public function setUser(?User $user = null): self
     {
-        $this->task = $task;
+        $this->user = $user;
 
         return $this;
     }

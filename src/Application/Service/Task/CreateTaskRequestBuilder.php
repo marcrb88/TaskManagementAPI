@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Application\Service;
+namespace App\Application\Service\Task;
 
 use App\Application\UseCase\Task\CreateTask\CreateTaskRequest;
 use App\Domain\ValueObject\Status;

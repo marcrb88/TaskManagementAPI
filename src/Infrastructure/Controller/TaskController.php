@@ -2,13 +2,13 @@
 
 namespace App\Infrastructure\Controller;
 
-use App\Application\Service\CreateTaskRequestBuilder;
+use App\Application\Service\Task\CreateTaskRequestBuilder;
 use App\Application\UseCase\Task\CreateTask\CreateTaskUseCase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
-use App\Application\Service\TaskDataValidator;
+use App\Application\Service\Task\TaskDataValidator;
 
 
 class TaskController
@@ -19,9 +19,9 @@ class TaskController
 
     public function __construct
     (
-         CreateTaskUseCase $createTaskUseCase,
-         CreateTaskRequestBuilder $createTaskRequestBuilder,
-            TaskDataValidator $taskDataValidator
+        CreateTaskUseCase $createTaskUseCase,
+        CreateTaskRequestBuilder $createTaskRequestBuilder,
+        TaskDataValidator $taskDataValidator
     )
     {
         $this->createTaskUseCase = $createTaskUseCase;
