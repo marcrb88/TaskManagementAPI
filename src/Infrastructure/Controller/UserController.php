@@ -74,16 +74,16 @@ class UserController
         $listUsersResponse = $this->listUsersUseCase->execute();
 
         return new JsonResponse(
-    [
-        'users' => array_map(fn($user) => [
-                'id' => $user->getId(),
-                'name' => $user->getName(),
-                'email' => $user->getEmail(),
-            ], $listUsersResponse->getUsers()),
-        'message' => $listUsersResponse->getMessage(),
-        'statusCode' => $listUsersResponse->getCodeStatus()
-    ],
-    $listUsersResponse->getCodeStatus()
-);
+            [
+                'users' => array_map(fn($user) => [
+                        'id' => $user->getId(),
+                        'name' => $user->getName(),
+                        'email' => $user->getEmail(),
+                    ], $listUsersResponse->getUsers()),
+                'message' => $listUsersResponse->getMessage(),
+                'statusCode' => $listUsersResponse->getCodeStatus()
+            ],
+            $listUsersResponse->getCodeStatus()
+        );
     }
 }
