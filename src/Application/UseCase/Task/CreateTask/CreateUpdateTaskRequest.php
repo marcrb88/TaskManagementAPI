@@ -6,44 +6,51 @@ use DateTime;
 use App\Domain\ValueObject\Status;
 use App\Domain\ValueObject\Priority;
 
-class CreateTaskRequest
+class CreateUpdateTaskRequest
 {
-    public string $title;
-    public string $description;
+    private ?string $id = null;
+    private ?string $title = null;
+    private ?string $description = null;
     private Status $status = Status::Pending;
     private Priority $priority = Priority::Low;
     private ?string $assignedTo = null;
-    public ?DateTime $dueDate = null;
-    private DateTime $createdAt;
-    private DateTime $updatedAt;
+    private ?DateTime $dueDate = null;
+    private ?DateTime $createdAt = null;
+    private ?DateTime $updatedAt = null;
 
-    public function __construct
-    (
-        string $title,
-        string $description
-    )
+    public function __construct()
     {
-        $this->title = $title;
-        $this->description = $description;
         $this->createdAt = new DateTime();
         $this->updatedAt = new DateTime();
     }
 
-    public function getTitle(): string
+    public function getId(): ?string
+    {
+        return $this->id;
+    }
+
+    public function setId(?string $id = null): self
+    {
+        $this->id = $id;
+        
+        return $this;
+    }
+
+    public function getTitle(): ?string
     {
         return $this->title;
     }
-    public function setTitle(string $title): self
+    public function setTitle(?string $title = null): self
     {
         $this->title = $title;
 
         return $this;
     }
-    public function getDescription(): string
+    public function getDescription(): ?string
     {
         return $this->description;
     }
-    public function setDescription(string $description): self
+    public function setDescription(?string $description = null): self
     {
         $this->description = $description;
 
@@ -83,27 +90,27 @@ class CreateTaskRequest
     {
         return $this->dueDate;
     }
-    public function setDueDate(?DateTime $dueDate): self
+    public function setDueDate(?DateTime $dueDate = null): self
     {
         $this->dueDate = $dueDate;
 
         return $this;
     }
-    public function getCreatedAt(): DateTime
+    public function getCreatedAt(): ?DateTime
     {
         return $this->createdAt;
     }
-    public function setCreatedAt(DateTime $createdAt): self
+    public function setCreatedAt(?DateTime $createdAt = null): self
     {
         $this->createdAt = $createdAt;
 
         return $this;
     }
-    public function getUpdatedAt(): DateTime
+    public function getUpdatedAt(): ?DateTime
     {
         return $this->updatedAt;
     }
-    public function setUpdatedAt(DateTime $updatedAt): self
+    public function setUpdatedAt(?DateTime $updatedAt = null): self
     {
         $this->updatedAt = $updatedAt;
 

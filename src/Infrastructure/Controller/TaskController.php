@@ -10,11 +10,11 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Application\Factory\TaskRequestBuilderFactory;
 use App\Application\Service\Task\CreateTaskDataValidator;
 use App\Application\Service\Task\FilterTaskDataValidator;
+use App\Application\Service\Task\UpdateTaskDataValidator;
 use App\Application\UseCase\Task\GetTaskDetail\GetTaskDetailRequest;
 use App\Application\UseCase\Task\GetTaskDetail\GetTaskDetailUseCase;
 use App\Application\UseCase\Task\ListTask\ListTaskUseCase;
 use App\Application\UseCase\Task\UpdateTask\UpdateTaskUseCase;
-use InvalidArgumentException;
 use Ramsey\Uuid\Nonstandard\Uuid;
 
 class TaskController
@@ -26,6 +26,7 @@ class TaskController
     private FilterTaskDataValidator $filterTaskDataValidator;
     private GetTaskDetailUseCase $getTaskDetailUse;
     private UpdateTaskUseCase $updateTaskUseCase;
+    private UpdateTaskDataValidator $updateTaskDataValidator;
 
     public function __construct
     (
@@ -35,7 +36,8 @@ class TaskController
         TaskRequestBuilderFactory $taskRequestBuilderFactory,
         FilterTaskDataValidator $filterTaskDataValidator,
         GetTaskDetailUseCase $getTaskDetailUse,
-        UpdateTaskUseCase $updateTaskUseCase
+        UpdateTaskUseCase $updateTaskUseCase,
+        UpdateTaskDataValidator $updateTaskDataValidator
     )
     {
         $this->createTaskUseCase = $createTaskUseCase;
@@ -45,6 +47,7 @@ class TaskController
         $this->filterTaskDataValidator = $filterTaskDataValidator;
         $this->getTaskDetailUse = $getTaskDetailUse;
         $this->updateTaskUseCase = $updateTaskUseCase;
+        $this->updateTaskDataValidator = $updateTaskDataValidator;
     }
     
     #[Route('/api/tasks', methods: ['POST'])]
@@ -156,24 +159,26 @@ class TaskController
     #[Route('/api/tasks/{id}', methods: ['PUT'])]
     public function updateTask(Request $request): JsonResponse
     {
-        $id = $request->attributes->get('id');
+        $data = $request->query->all();
 
-        if (!Uuid::isValid($id)) {
+        //Validate data to update task
+        $updateTaskDataValidatorResponse = $this->updateTaskDataValidator->validate($data);
+
+        if (!$updateTaskDataValidatorResponse->isValid()) {
             return new JsonResponse(
                 [
-                    'message' => "Invalid task id",
+                    'message' => $updateTaskDataValidatorResponse->getMessage(),
                     'statusCode' => Response::HTTP_BAD_REQUEST
                 ],
                 Response::HTTP_BAD_REQUEST
             );
         }
 
-        $task = new Task();
-
-        $updateTaskRequest = new UpdateTaskRequest($task);
-
+        $createUpdateTaskRequestBuilder = $this->taskRequestBuilderFactory->getBuilder(TaskRequestBuilderFactory::TYPE_UPDATE);
+        $createUpdateTaskRequest = $createUpdateTaskRequestBuilder->build($data);
+        
         //Execute use case to obtain task details
-        $listTasksResponse = $this->updateTaskUseCase->execute($updateTaskRequest);
+        $listTasksResponse = $this->updateTaskUseCase->execute($createUpdateTaskRequest);
         
         return new JsonResponse(
             [

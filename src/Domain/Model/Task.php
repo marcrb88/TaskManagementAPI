@@ -43,12 +43,9 @@ class Task extends SerializeDtoAbstract
     #[ORM\Column(type: "datetime", nullable: true)]
     private DateTime $updatedAt;
 
-    public function __construct(
-        string $title,
-        string $description
-    ) {
-        $this->title = $title;
-        $this->description = $description;
+    public function __construct() 
+    {
+
         $this->createdAt = new DateTime();
         $this->updatedAt = new DateTime();
     }
