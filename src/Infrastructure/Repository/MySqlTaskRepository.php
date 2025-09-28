@@ -36,4 +36,9 @@ class MySqlTaskRepository implements TaskRepositoryInterface
         $this->entityManager->remove($task);
         $this->entityManager->flush();
     }
+
+    public function findByFilters(array $filters): array
+    {
+        return $this->entityManager->getRepository(Task::class)->findBy($filters);
+    }
 }

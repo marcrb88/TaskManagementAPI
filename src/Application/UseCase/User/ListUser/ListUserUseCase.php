@@ -4,7 +4,6 @@ namespace App\Application\UseCase\User\ListUser;
 
 use App\Infrastructure\Repository\MySqlUserRepository;
 use Symfony\Component\HttpFoundation\Response;
-use App\Application\UseCase\User\ListUser\ListUserResponse;
 use Throwable;
 
 class ListUserUseCase
@@ -29,6 +28,12 @@ class ListUserUseCase
         } catch (Throwable $e) {
             $listUserResponse->setCodeStatus($e->getCode() ?: Response::HTTP_INTERNAL_SERVER_ERROR);
             $listUserResponse->setMessage('Error obtaining users: ' . $e->getMessage());
+            return $listUserResponse;
+        }
+
+        if (empty($users)) {
+            $listUserResponse->setMessage('No users found');
+            $listUserResponse->setCodeStatus(Response::HTTP_NOT_FOUND);
             return $listUserResponse;
         }
 

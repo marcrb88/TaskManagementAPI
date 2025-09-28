@@ -2,12 +2,13 @@
 
 namespace App\Domain\Model;
 
+use App\Domain\Repository\SerializeDtoAbstract;
 use Doctrine\ORM\Mapping as ORM;
 use DateTime;
 
 #[ORM\Entity]
 #[ORM\Table(name: "users")]
-class User
+class User extends SerializeDtoAbstract
 {
     #[ORM\Id]
     #[ORM\Column(type: "uuid")]

@@ -2,6 +2,7 @@
 
 namespace App\Domain\Model;
 
+use App\Domain\Repository\SerializeDtoAbstract;
 use Doctrine\ORM\Mapping as ORM;
 use App\Domain\ValueObject\Status;
 use App\Domain\ValueObject\Priority;
@@ -9,7 +10,7 @@ use DateTime;
 
 #[ORM\Entity]
 #[ORM\Table(name: "tasks")]
-class Task
+class Task extends SerializeDtoAbstract
 {
     #[ORM\Id]
     #[ORM\Column(type: "uuid")]

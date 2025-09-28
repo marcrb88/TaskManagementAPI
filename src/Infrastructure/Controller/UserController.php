@@ -73,13 +73,12 @@ class UserController
         //Execute use case to list users
         $listUsersResponse = $this->listUsersUseCase->execute();
 
+        //Convert users to array format for JSON response
+        $usersArray = array_map(fn($user) => $user->toArray(), $listUsersResponse->getUsers());
+
         return new JsonResponse(
             [
-                'users' => array_map(fn($user) => [
-                        'id' => $user->getId(),
-                        'name' => $user->getName(),
-                        'email' => $user->getEmail(),
-                    ], $listUsersResponse->getUsers()),
+                'users' => $usersArray,
                 'message' => $listUsersResponse->getMessage(),
                 'statusCode' => $listUsersResponse->getCodeStatus()
             ],

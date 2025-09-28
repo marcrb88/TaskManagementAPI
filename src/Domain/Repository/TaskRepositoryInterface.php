@@ -9,4 +9,5 @@ interface TaskRepositoryInterface
     public function findById(string $id): ?Task;
     public function findAll(): array;
     public function delete(Task $task): void;
+    public function findByFilters(array $filters): array;
 }

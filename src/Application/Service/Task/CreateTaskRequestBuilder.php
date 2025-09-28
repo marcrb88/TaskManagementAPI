@@ -3,23 +3,14 @@
 namespace App\Application\Service\Task;
 
 use App\Application\UseCase\Task\CreateTask\CreateTaskRequest;
+use App\Domain\Repository\TaskRequestBuilderInterface;
 use App\Domain\ValueObject\Status;
 use App\Domain\ValueObject\Priority;
-use App\Infrastructure\Repository\MySqlUserRepository;
 use DateTime;
 
 
-class CreateTaskRequestBuilder
+class CreateTaskRequestBuilder implements TaskRequestBuilderInterface
 {
-    private MySqlUserRepository $userRepository;
-
-    public function __construct
-    (
-        MySqlUserRepository $userRepository
-    )
-    {
-        $this->userRepository = $userRepository;
-    }
 
     public function build(array $data): CreateTaskRequest
     {
