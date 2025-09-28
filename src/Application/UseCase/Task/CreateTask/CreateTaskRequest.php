@@ -13,20 +13,20 @@ class CreateTaskRequest
     private Status $status = Status::Pending;
     private Priority $priority = Priority::Low;
     private ?string $assignedTo = null;
-    public DateTime $dueDate;
+    public ?DateTime $dueDate = null;
     private DateTime $createdAt;
     private DateTime $updatedAt;
 
     public function __construct
     (
         string $title,
-        string $description,
-        DateTime $dueDate
+        string $description
     )
     {
         $this->title = $title;
         $this->description = $description;
-        $this->dueDate = $dueDate;
+        $this->createdAt = new DateTime();
+        $this->updatedAt = new DateTime();
     }
 
     public function getTitle(): string
@@ -73,17 +73,17 @@ class CreateTaskRequest
     {
         return $this->assignedTo;
     }
-    public function setAssignedTo(?string $assignedTo): self
+    public function setAssignedTo(?string $assignedTo = null): self
     {
         $this->assignedTo = $assignedTo;
 
         return $this;
     }
-    public function getDueDate(): DateTime
+    public function getDueDate(): ?DateTime
     {
         return $this->dueDate;
     }
-    public function setDueDate(DateTime $dueDate): self
+    public function setDueDate(?DateTime $dueDate): self
     {
         $this->dueDate = $dueDate;
 

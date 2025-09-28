@@ -2,19 +2,24 @@
 
 namespace App\Application\UseCase\Task\CreateTask;
 
+use App\Application\UseCase\Response\BaseResponse;
 use App\Domain\Model\Task;
 
-class CreateTaskResponse
+class CreateTaskResponse extends BaseResponse
 {
-    private Task $task;
+    private ?Task $task = null;
     private int $codeStatus;
-    private string $message;
-    
-    public function getTask(): Task
+
+    public function __construct(string $message)
+    {
+        parent::__construct($message);
+    }
+
+    public function getTask(): ?Task
     {
         return $this->task;
     }
-    public function setTask(Task $task): self
+    public function setTask(?Task $task = null): self
     {
         $this->task = $task;
 

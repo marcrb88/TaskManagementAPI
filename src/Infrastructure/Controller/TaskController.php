@@ -2,26 +2,31 @@
 
 namespace App\Infrastructure\Controller;
 
+use App\Application\Service\CreateTaskRequestBuilder;
 use App\Application\UseCase\Task\CreateTask\CreateTaskUseCase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
-use DateTime;
-use App\Application\UseCase\Task\CreateTask\CreateTaskRequest;
+use App\Application\Service\TaskDataValidator;
 
 
-class CreateTaskController
+class TaskController
 {
     private CreateTaskUseCase $createTaskUseCase;
+    private CreateTaskRequestBuilder $createTaskRequestBuilder;
+    private TaskDataValidator $taskDataValidator;
 
     public function __construct
     (
-         CreateTaskUseCase $createTaskUseCase
-
+         CreateTaskUseCase $createTaskUseCase,
+         CreateTaskRequestBuilder $createTaskRequestBuilder,
+            TaskDataValidator $taskDataValidator
     )
     {
         $this->createTaskUseCase = $createTaskUseCase;
+        $this->createTaskRequestBuilder = $createTaskRequestBuilder;
+        $this->taskDataValidator = $taskDataValidator;
     }
     
     #[Route('/api/tasks', methods: ['POST'])]
@@ -30,45 +35,29 @@ class CreateTaskController
         //Recieve data from POST request
         $data = json_decode($request->getContent(), true);
 
-        $title = $data['title'] ?? null;
-        $description = $data['description'] ?? null;
-        $dueDate = $data['dueDate'] ?? null;
-        $status = $data['status'] ?? null;
-        $priority = $data['priority'] ?? null;
-        $assignedTo = $data['assignedTo'] ?? null;
-        $createdAt = $data['createdAt'] ?? null;
-
-        //Validate data
-        if (empty($title) || empty($description) || empty($dueDate)) {
-            return new JsonResponse(['error' => 'Incomplete data'], Response::HTTP_BAD_REQUEST);
+        //Validate data service
+        $taskDataValidatorResponse = $this->taskDataValidator->validate($data);
+        if (!$taskDataValidatorResponse->isValid()) {
+            return new JsonResponse(
+                [
+                    'message' => $taskDataValidatorResponse->getMessage(),
+                    'statusCode' => Response::HTTP_BAD_REQUEST
+                ],
+                Response::HTTP_BAD_REQUEST
+            );
         }
 
-        //Build the Task Request DTO
-        $createTaskRequest = new CreateTaskRequest(
-            $title,
-            $description,
-            new DateTime($dueDate)
-        );
-        
-        if (!empty($status)) {
-            $createTaskRequest->setStatus($status);
-        }
-        if (!empty($priority)) {
-            $createTaskRequest->setPriority($priority);
-        }
-        if (!empty($assignedTo)) {
-            $createTaskRequest->setAssignedTo($assignedTo);
-        }
-        if (!empty($createdAt)) {
-            $createTaskRequest->setCreatedAt(new DateTime($createdAt));
-        }
+        //Build CreateTaskRequest
+        $createTaskRequest = $this->createTaskRequestBuilder->build($data);
 
+        //Execute use case to create the task
         $createTaskResponse = $this->createTaskUseCase->execute($createTaskRequest);
 
         return new JsonResponse(
             [
-                'id' => $createTaskResponse->getTask()->getId(),
-                'message' => $createTaskResponse->getMessage()
+                'id' => $createTaskResponse->getTask()?->getId(),
+                'message' => $createTaskResponse->getMessage(),
+                'statusCode' => $createTaskResponse->getCodeStatus()
             ],
             $createTaskResponse->getCodeStatus()
         );

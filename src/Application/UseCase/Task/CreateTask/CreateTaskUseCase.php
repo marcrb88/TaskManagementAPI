@@ -6,46 +6,49 @@ use App\Infrastructure\Repository\MySqlTaskRepository;
 use App\Application\UseCase\Task\CreateTask\CreateTaskRequest;
 use App\Application\UseCase\Task\CreateTask\CreateTaskResponse;
 use App\Domain\Model\Task;
+use App\Infrastructure\Repository\MySqlUserRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Exception;
 
 class CreateTaskUseCase
 {
-    private MySqlTaskRepository $mySqlTaskRepository;
+    private MySqlTaskRepository $taskRepository;
+    private MySqlUserRepository $userRepository;
 
     public function __construct
     (
-        MySqlTaskRepository $mySqlTaskRepository
+        MySqlTaskRepository $taskRepository,
+        MySqlUserRepository $userRepository
     )
     {
-        $this->mySqlTaskRepository = $mySqlTaskRepository;
+        $this->taskRepository = $taskRepository;
+        $this->userRepository = $userRepository;
     }
 
     public function execute(CreateTaskRequest $request): CreateTaskResponse
     {   
-        $createTaskResponse = new CreateTaskResponse();
+        $createTaskResponse = new CreateTaskResponse('Task created successfully');
         $createTaskResponse->setCodeStatus(Response::HTTP_CREATED);
-        $createTaskResponse->setMessage('Task created successfully');
         
         $task = new Task(
             $request->getTitle(),
-            $request->getDescription(),
-            $request->getDueDate()
+            $request->getDescription()
         );
 
-        //Check if the user exists before saving the task
         if ($request->getAssignedTo()) {
-            $user = $this->mySqlTaskRepository->findById($request->getAssignedTo());
-            if (!$user) {
-                $createTaskResponse->setCodeStatus(Response::HTTP_BAD_REQUEST);
-                $createTaskResponse->setMessage('Assigned user does not exist');
-                return $createTaskResponse;
-            }
-            $task->setAssignedTo($request->getAssignedTo());
+            $user = $this->userRepository->findById($request->getAssignedTo());
+            $task->setAssignedTo($user);
         }
 
+        $task->setStatus($request->getStatus());
+        $task->setPriority($request->getPriority());
+        $task->setDueDate($request->getDueDate());
+        $task->setCreatedAt($request->getCreatedAt());
+        $task->setUpdatedAt($request->getUpdatedAt());
+
+
         try {
-            $this->mySqlTaskRepository->save($task);
+            $this->taskRepository->save($task);
         } catch (Exception $e) {
             $createTaskResponse->setCodeStatus($e->getCode() ?: Response::HTTP_INTERNAL_SERVER_ERROR);
             $createTaskResponse->setMessage('Error creating task: ' . $e->getMessage());
