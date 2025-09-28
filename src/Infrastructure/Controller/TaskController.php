@@ -13,6 +13,7 @@ use App\Application\Service\Task\FilterTaskDataValidator;
 use App\Application\UseCase\Task\GetTaskDetail\GetTaskDetailRequest;
 use App\Application\UseCase\Task\GetTaskDetail\GetTaskDetailUseCase;
 use App\Application\UseCase\Task\ListTask\ListTaskUseCase;
+use App\Application\UseCase\Task\UpdateTask\UpdateTaskUseCase;
 use InvalidArgumentException;
 use Ramsey\Uuid\Nonstandard\Uuid;
 
@@ -24,6 +25,7 @@ class TaskController
     private TaskRequestBuilderFactory $taskRequestBuilderFactory;
     private FilterTaskDataValidator $filterTaskDataValidator;
     private GetTaskDetailUseCase $getTaskDetailUse;
+    private UpdateTaskUseCase $updateTaskUseCase;
 
     public function __construct
     (
@@ -32,7 +34,8 @@ class TaskController
         ListTaskUseCase $listTasksUseCase,
         TaskRequestBuilderFactory $taskRequestBuilderFactory,
         FilterTaskDataValidator $filterTaskDataValidator,
-        GetTaskDetailUseCase $getTaskDetailUse
+        GetTaskDetailUseCase $getTaskDetailUse,
+        UpdateTaskUseCase $updateTaskUseCase
     )
     {
         $this->createTaskUseCase = $createTaskUseCase;
@@ -41,6 +44,7 @@ class TaskController
         $this->taskRequestBuilderFactory = $taskRequestBuilderFactory;
         $this->filterTaskDataValidator = $filterTaskDataValidator;
         $this->getTaskDetailUse = $getTaskDetailUse;
+        $this->updateTaskUseCase = $updateTaskUseCase;
     }
     
     #[Route('/api/tasks', methods: ['POST'])]
@@ -142,6 +146,37 @@ class TaskController
         return new JsonResponse(
             [
                 'task' => $listTasksResponse->getTask()?->toArray(),
+                'message' => $listTasksResponse->getMessage(),
+                'statusCode' => $listTasksResponse->getCodeStatus()
+            ],
+            $listTasksResponse->getCodeStatus()
+        );
+    }
+
+    #[Route('/api/tasks/{id}', methods: ['PUT'])]
+    public function updateTask(Request $request): JsonResponse
+    {
+        $id = $request->attributes->get('id');
+
+        if (!Uuid::isValid($id)) {
+            return new JsonResponse(
+                [
+                    'message' => "Invalid task id",
+                    'statusCode' => Response::HTTP_BAD_REQUEST
+                ],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
+        $task = new Task();
+
+        $updateTaskRequest = new UpdateTaskRequest($task);
+
+        //Execute use case to obtain task details
+        $listTasksResponse = $this->updateTaskUseCase->execute($updateTaskRequest);
+        
+        return new JsonResponse(
+            [
                 'message' => $listTasksResponse->getMessage(),
                 'statusCode' => $listTasksResponse->getCodeStatus()
             ],
