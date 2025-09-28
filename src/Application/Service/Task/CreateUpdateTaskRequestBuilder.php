@@ -20,6 +20,14 @@ class CreateUpdateTaskRequestBuilder implements TaskRequestBuilderInterface
             $createTaskRequest->setId($data['id']);
         }
 
+        if (!empty($data['title'])) {
+            $createTaskRequest->setTitle($data['title']);
+        }
+
+        if (!empty($data['description'])) {
+            $createTaskRequest->setDescription($data['description']);
+        }
+
         if (!empty($data['status'])) {
             $createTaskRequest->setStatus(Status::from($data['status']));
         }

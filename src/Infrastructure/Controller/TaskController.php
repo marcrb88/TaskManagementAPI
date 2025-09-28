@@ -159,7 +159,10 @@ class TaskController
     #[Route('/api/tasks/{id}', methods: ['PUT'])]
     public function updateTask(Request $request): JsonResponse
     {
-        $data = $request->query->all();
+        //Recieve data from PUT request
+        $data = json_decode($request->getContent(), true);
+        $id = $request->attributes->get('id');
+        $data['id'] = $id;
 
         //Validate data to update task
         $updateTaskDataValidatorResponse = $this->updateTaskDataValidator->validate($data);

@@ -2,16 +2,16 @@
 
 namespace App\Application\Service\Task;
 
-use App\Application\Service\Response\FilterTaskDataValidatorResponse;
+use App\Application\Service\Response\TaskDataValidatorResponse;
 use App\Domain\Repository\DataValidatorInterface;
 use App\Domain\ValueObject\Status;
 use App\Domain\ValueObject\Priority;
 
 class FilterTaskDataValidator implements DataValidatorInterface
 {
-    public function validate(array $data): FilterTaskDataValidatorResponse
+    public function validate(array $data): TaskDataValidatorResponse
     {
-        $filterTaskDataValidatorResponse = new FilterTaskDataValidatorResponse(true);
+        $filterTaskDataValidatorResponse = new TaskDataValidatorResponse(true);
         
          if (!empty($data['status'])) {
             $status = $this->validateStatus($data['status']);

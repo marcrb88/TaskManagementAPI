@@ -6,8 +6,9 @@ use App\Application\Service\Response\TaskDataValidatorResponse;
 use App\Domain\Repository\UserRepositoryInterface;
 use DateTime;
 use Ramsey\Uuid\Uuid;
+use App\Domain\Repository\DataValidatorInterface;
 
-class CreateTaskDataValidator
+class CreateTaskDataValidator implements DataValidatorInterface
 {
     public function __construct
     (

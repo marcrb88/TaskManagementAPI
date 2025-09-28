@@ -7,8 +7,9 @@ use DateTime;
 use App\Domain\ValueObject\Status;
 use App\Infrastructure\Repository\MySqlTaskRepository;
 use Ramsey\Uuid\Uuid;
+use App\Domain\Repository\DataValidatorInterface;
 
-class UpdateTaskDataValidator
+class UpdateTaskDataValidator implements DataValidatorInterface
 {
     private MySqlTaskRepository $mySqlTaskRepository;
 
@@ -27,7 +28,6 @@ class UpdateTaskDataValidator
             if (!Uuid::isValid($data['id'])) {
                 $updateTaskDataValidatorResponse->setIsValid(false);
                 $updateTaskDataValidatorResponse->setMessage('Task ID is not a valid UUID.');
-
                 return $updateTaskDataValidatorResponse;
             }
         }
@@ -35,14 +35,12 @@ class UpdateTaskDataValidator
         if (isset($data['title']) && empty($data['title'])) {
             $updateTaskDataValidatorResponse->setIsValid(false);
             $updateTaskDataValidatorResponse->setMessage('Title cannot be empty.');
-            
             return $updateTaskDataValidatorResponse;
         }
 
         if (isset($data['description']) && empty($data['description'])) {
             $updateTaskDataValidatorResponse->setIsValid(false);
             $updateTaskDataValidatorResponse->setMessage('Description cannot be empty.');
-            
             return $updateTaskDataValidatorResponse;
         }
 
@@ -52,7 +50,6 @@ class UpdateTaskDataValidator
             if ($dueDate < $now) {
                 $updateTaskDataValidatorResponse->setIsValid(false);
                 $updateTaskDataValidatorResponse->setMessage('Due date must be a future date.');
-                
                 return $updateTaskDataValidatorResponse;
             }
         }
@@ -62,7 +59,6 @@ class UpdateTaskDataValidator
             if (!$newStatus) {
                 $updateTaskDataValidatorResponse->setIsValid(false);
                 $updateTaskDataValidatorResponse->setMessage('Invalid status value.');
-                
                 return $updateTaskDataValidatorResponse;
             }
         }
@@ -72,17 +68,15 @@ class UpdateTaskDataValidator
         if (empty($existingTask)) {
             $updateTaskDataValidatorResponse->setIsValid(false);
             $updateTaskDataValidatorResponse->setMessage('Task not found.');
-
             return $updateTaskDataValidatorResponse;
         }
 
         $currentStatus = $existingTask->getStatus();
 
         //Business rules of the technical test: a completed task cannot transition to another status.
-        if ($currentStatus === Status::Completed && $newStatus !== Status::Completed) {
+        if (!empty($data['status']) && $currentStatus === Status::Completed && $newStatus !== Status::Completed) {
             $updateTaskDataValidatorResponse->setIsValid(false);
             $updateTaskDataValidatorResponse->setMessage('A completed task cannot change to another status.');
-            
             return $updateTaskDataValidatorResponse;
         }
 
@@ -93,12 +87,9 @@ class UpdateTaskDataValidator
             Status::Completed->value   => [] 
         ];
 
-        if (!in_array($newStatus->value, $validTransitions[$currentStatus->value])) {
+        if (!empty($data['status']) && !in_array($newStatus->value, $validTransitions[$currentStatus->value])) {
             $updateTaskDataValidatorResponse->setIsValid(false);
-            $updateTaskDataValidatorResponse->setMessage("
-            Invalid status transition: The current task status is: ". $currentStatus->value. " and you want to change status
-            to ".$newStatus->value ." Operation not allowed. The flow of a task has to follow: pending -> in_progress -> completed");
-            
+            $updateTaskDataValidatorResponse->setMessage("Invalid status transition: The current task status is: ". $currentStatus->value. " and you want to change status to ".$newStatus->value .". Operation not allowed. The task has to follow the following schema: pending -> in_progress -> completed");
             return $updateTaskDataValidatorResponse;
         }
 
