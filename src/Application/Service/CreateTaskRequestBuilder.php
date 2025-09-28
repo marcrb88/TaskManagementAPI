@@ -3,7 +3,6 @@
 namespace App\Application\Service;
 
 use App\Application\UseCase\Task\CreateTask\CreateTaskRequest;
-use App\Domain\Model\User;
 use App\Domain\ValueObject\Status;
 use App\Domain\ValueObject\Priority;
 use App\Infrastructure\Repository\MySqlUserRepository;

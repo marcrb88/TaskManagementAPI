@@ -5,29 +5,29 @@ namespace App\Domain\Model;
 use Doctrine\ORM\Mapping as ORM;
 use DateTime;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="users")
- */
+#[ORM\Entity]
+#[ORM\Table(name: "users")]
 class User
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="uuid")
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: "uuid")]
+    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\CustomIdGenerator(class: "doctrine.uuid_generator")]
     private string $id;
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+
+    #[ORM\Column(type: "string", length: 255)]
     private string $name;
-    /**
-     * @ORM\Column(type="string", length=255, unique=true)
-     */
+
+    #[ORM\Column(type: "string", length: 255, unique: true)]
     private string $email;
-    /**
-     * @ORM\Column(type="datetime")
-     */
+
+    #[ORM\Column(type: "datetime")]
     private DateTime $createdAt;
+
+    public function getId(): string
+    {
+        return $this->id;
+    }
 
     public function getName(): string
     {
