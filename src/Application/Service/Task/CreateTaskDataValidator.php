@@ -2,12 +2,12 @@
 
 namespace App\Application\Service\Task;
 
-use App\Application\Service\Response\DataValidatorResponse;
+use App\Application\Service\Response\CreateTaskDataValidatorResponse;
 use App\Domain\Repository\UserRepositoryInterface;
 use DateTime;
 use Ramsey\Uuid\Uuid;
 
-class TaskDataValidator
+class CreateTaskDataValidator
 {
     public function __construct
     (
@@ -16,9 +16,9 @@ class TaskDataValidator
         $this->userRepository = $userRepository;
     }
 
-    public function validate(array $data): DataValidatorResponse
+    public function validate(array $data): CreateTaskDataValidatorResponse
     {
-        $dataValidatorResponse = new DataValidatorResponse(true);
+        $dataValidatorResponse = new CreateTaskDataValidatorResponse(true);
 
         if (empty($data['title']) || empty($data['description'])) {
             $dataValidatorResponse->setIsValid(false);

@@ -39,6 +39,46 @@ class MySqlTaskRepository implements TaskRepositoryInterface
 
     public function findByFilters(array $filters): array
     {
-        return $this->entityManager->getRepository(Task::class)->findBy($filters);
+        $qb = $this->entityManager->createQueryBuilder();
+        $qb->select('t')
+        ->from(Task::class, 't');
+
+        if (!empty($filters['status'])) {
+            $qb->andWhere('t.status = :status')
+            ->setParameter('status', $filters['status']);
+        }
+
+        if (!empty($filters['priority'])) {
+            $qb->andWhere('t.priority = :priority')
+            ->setParameter('priority', $filters['priority']);
+        }
+
+        if (!empty($filters['assignedTo'])) {
+            $qb->andWhere('t.assignedTo = :assignedTo')
+            ->setParameter('assignedTo', $filters['assignedTo']);
+        }
+
+        if (!empty($filters['createdAtFrom'])) {
+            $qb->andWhere('t.createdAt >= :createdAtFrom')
+            ->setParameter('createdAtFrom', $filters['createdAtFrom']);
+        }
+
+        if (!empty($filters['createdAtTo'])) {
+            $qb->andWhere('t.createdAt <= :createdAtTo')
+            ->setParameter('createdAtTo', $filters['createdAtTo']);
+        }
+
+        if (!empty($filters['dueDateFrom'])) {
+            $qb->andWhere('t.dueDate >= :dueDateFrom')
+            ->setParameter('dueDateFrom', $filters['dueDateFrom']);
+        }
+
+        if (!empty($filters['dueDateTo'])) {
+            $qb->andWhere('t.dueDate <= :dueDateTo')
+            ->setParameter('dueDateTo', $filters['dueDateTo']);
+        }
+
+        return $qb->getQuery()->getResult();
     }
+        
 }

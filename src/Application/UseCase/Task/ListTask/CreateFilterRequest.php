@@ -9,24 +9,14 @@ use App\Domain\ValueObject\Priority;
     
 class CreateFilterRequest extends SerializeDtoAbstract
 {
-    private ?string $id = null;
     private ?Status $status = null;
     private ?Priority $priority = null;
     private ?string $assignedTo = null;
-    public ?DateTime $dueDate = null;
-    private ?DateTime $createdAt = null;
+    public ?DateTime $dueDateFrom = null;
+    public ?DateTime $dueDateTo = null;
+    private ?DateTime $createdAtFrom = null;
+    private ?DateTime $createdAtTo = null;
 
-    public function getId(): ?string
-    {
-        return $this->id;
-    }
-
-    public function setId(?string $id = null): self
-    {
-        $this->id = $id;
-
-        return $this;
-    }
 
     public function getStatus(): ?Status
     {
@@ -63,26 +53,50 @@ class CreateFilterRequest extends SerializeDtoAbstract
         return $this;
     }
 
-    public function getDueDate(): ?DateTime
+    public function getDueDateFrom(): ?DateTime
     {
-        return $this->dueDate;
+        return $this->dueDateFrom;
     }
 
-    public function setDueDate(?DateTime $dueDate): self
+    public function setDueDateFrom(?DateTime $dueDateFrom): self
     {
-        $this->dueDate = $dueDate;
+        $this->dueDateFrom = $dueDateFrom;
 
         return $this;
     }
 
-    public function getCreatedAt(): ?DateTime
+    public function getDueDateTo(): ?DateTime
     {
-        return $this->createdAt;
+        return $this->dueDateTo;
     }
 
-    public function setCreatedAt(?DateTime $createdAt = null): self
+    public function setDueDateTo(?DateTime $dueDateTo): self
     {
-        $this->createdAt = $createdAt;
+        $this->dueDateTo= $dueDateTo;
+
+        return $this;
+    }
+
+    public function getCreatedAtFrom(): ?DateTime
+    {
+        return $this->createdAtFrom;
+    }
+
+    public function setCreatedAtFrom(?DateTime $createdAtFrom = null): self
+    {
+        $this->createdAtFrom = $createdAtFrom;
+
+        return $this;
+    }
+
+    public function getCreatedAtTo(): ?DateTime
+    {
+        return $this->createdAtTo;
+    }
+
+    public function setCreatedAtTo(?DateTime $createdAtTo = null): self
+    {
+        $this->createdAtTo = $createdAtTo;
 
         return $this;
     }

@@ -7,30 +7,40 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
-use App\Application\Service\Task\TaskDataValidator;
 use App\Application\Factory\TaskRequestBuilderFactory;
+use App\Application\Service\Task\CreateTaskDataValidator;
+use App\Application\Service\Task\FilterTaskDataValidator;
+use App\Application\UseCase\Task\GetTaskDetail\GetTaskDetailRequest;
+use App\Application\UseCase\Task\GetTaskDetail\GetTaskDetailUseCase;
 use App\Application\UseCase\Task\ListTask\ListTaskUseCase;
 use InvalidArgumentException;
+use Ramsey\Uuid\Nonstandard\Uuid;
 
 class TaskController
 {
     private CreateTaskUseCase $createTaskUseCase;
-    private TaskDataValidator $taskDataValidator;
+    private CreateTaskDataValidator $createTaskDataValidator;
     private ListTaskUseCase $listTasksUseCase;
     private TaskRequestBuilderFactory $taskRequestBuilderFactory;
+    private FilterTaskDataValidator $filterTaskDataValidator;
+    private GetTaskDetailUseCase $getTaskDetailUse;
 
     public function __construct
     (
         CreateTaskUseCase $createTaskUseCase,
-        TaskDataValidator $taskDataValidator,
+        CreateTaskDataValidator $createTaskDataValidator,
         ListTaskUseCase $listTasksUseCase,
-        TaskRequestBuilderFactory $taskRequestBuilderFactory
+        TaskRequestBuilderFactory $taskRequestBuilderFactory,
+        FilterTaskDataValidator $filterTaskDataValidator,
+        GetTaskDetailUseCase $getTaskDetailUse
     )
     {
         $this->createTaskUseCase = $createTaskUseCase;
-        $this->taskDataValidator = $taskDataValidator;
+        $this->createTaskDataValidator = $createTaskDataValidator;
         $this->listTasksUseCase = $listTasksUseCase;
         $this->taskRequestBuilderFactory = $taskRequestBuilderFactory;
+        $this->filterTaskDataValidator = $filterTaskDataValidator;
+        $this->getTaskDetailUse = $getTaskDetailUse;
     }
     
     #[Route('/api/tasks', methods: ['POST'])]
@@ -40,11 +50,11 @@ class TaskController
         $data = json_decode($request->getContent(), true);
 
         //Validate data service
-        $taskDataValidatorResponse = $this->taskDataValidator->validate($data);
-        if (!$taskDataValidatorResponse->isValid()) {
+        $createTaskDataValidatorResponse = $this->createTaskDataValidator->validate($data);
+        if (!$createTaskDataValidatorResponse->isValid()) {
             return new JsonResponse(
                 [
-                    'message' => $taskDataValidatorResponse->getMessage(),
+                    'message' => $createTaskDataValidatorResponse->getMessage(),
                     'statusCode' => Response::HTTP_BAD_REQUEST
                 ],
                 Response::HTTP_BAD_REQUEST
@@ -74,21 +84,24 @@ class TaskController
     public function listTasks(Request $request): JsonResponse
     {
 
-        //Obtain the builder to create the filter task request
-        $filterTaskBuilder = $this->taskRequestBuilderFactory->getBuilder(TaskRequestBuilderFactory::TYPE_FILTER);
-       
-        //Build CreateFilterRequest
-        try {
-            $filterTaskRequest = $filterTaskBuilder->build($request->query->all());
-        } catch (InvalidArgumentException $e) {
+        //Validate filter data service
+        $filterTaskDataValidatorResponse = $this->filterTaskDataValidator->validate($request->query->all());
+
+        if (!$filterTaskDataValidatorResponse->isValid()) {
             return new JsonResponse(
                 [
-                    'message' => 'Invalid filter value: ' . $e->getMessage(),
+                    'message' => $filterTaskDataValidatorResponse->getMessage(),
                     'statusCode' => Response::HTTP_BAD_REQUEST
                 ],
                 Response::HTTP_BAD_REQUEST
             );
         }
+        
+        //Obtain the builder to create the filter task request
+        $filterTaskBuilder = $this->taskRequestBuilderFactory->getBuilder(TaskRequestBuilderFactory::TYPE_FILTER);
+       
+        //Build CreateFilterRequest
+        $filterTaskRequest = $filterTaskBuilder->build($request->query->all());
 
         //Execute use case to list tasks
         $listTasksResponse = $this->listTasksUseCase->execute($filterTaskRequest);
@@ -99,6 +112,36 @@ class TaskController
         return new JsonResponse(
             [
                 'tasks' => $tasksArray,
+                'message' => $listTasksResponse->getMessage(),
+                'statusCode' => $listTasksResponse->getCodeStatus()
+            ],
+            $listTasksResponse->getCodeStatus()
+        );
+    }
+
+    #[Route('/api/tasks/{id}', methods: ['GET'])]
+    public function obtainTaskDetail(Request $request): JsonResponse
+    {
+        $id = $request->attributes->get('id');
+
+        if (!Uuid::isValid($id)) {
+            return new JsonResponse(
+                [
+                    'message' => "Invalid task id",
+                    'statusCode' => Response::HTTP_BAD_REQUEST
+                ],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
+        $getTaskDetailRequest = new GetTaskDetailRequest($id);
+
+        //Execute use case to obtain task details
+        $listTasksResponse = $this->getTaskDetailUse->execute($getTaskDetailRequest);
+        
+        return new JsonResponse(
+            [
+                'task' => $listTasksResponse->getTask()?->toArray(),
                 'message' => $listTasksResponse->getMessage(),
                 'statusCode' => $listTasksResponse->getCodeStatus()
             ],

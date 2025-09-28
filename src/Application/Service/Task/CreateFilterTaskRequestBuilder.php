@@ -4,10 +4,9 @@ namespace App\Application\Service\Task;
 
 use App\Application\UseCase\Task\ListTask\CreateFilterRequest;
 use App\Domain\Repository\TaskRequestBuilderInterface;
-use App\Domain\ValueObject\Status;
-use App\Domain\ValueObject\Priority;
 use DateTime;
-use Ramsey\Uuid\Uuid;
+use App\Domain\ValueObject\Priority;
+use App\Domain\ValueObject\Status;
 
 
 class CreateFilterTaskRequestBuilder implements TaskRequestBuilderInterface
@@ -17,28 +16,12 @@ class CreateFilterTaskRequestBuilder implements TaskRequestBuilderInterface
     {
         $createTaskRequest = new CreateFilterRequest();
 
-        if (!empty($data['id'])) {
-            $uuid = $data['assignedTo'];
-            if (!Uuid::isValid($uuid)) {
-                throw new \InvalidArgumentException("Assigned user ID is not a valid UUID.");
-            }
-            $createTaskRequest->setId($data['id']);
-        }
-
         if (!empty($data['status'])) {
-            $status = $this->validateStatus($data['status']);
-            if (empty($status)) {
-                throw new \InvalidArgumentException("Invalid status value: " . $data['status']);
-            }
-            $createTaskRequest->setStatus($status);
+            $createTaskRequest->setStatus(Status::from($data['status']));
         }
 
         if (!empty($data['priority'])) {
-            $priority = $this->validatePriority($data['priority']);
-            if (empty($priority)) {
-                throw new \InvalidArgumentException("Invalid priority value: " . $data['priority']);
-            }
-            $createTaskRequest->setPriority($priority);
+            $createTaskRequest->setPriority(Priority::from($data['priority']));
         }
 
         if (!empty($data['assignedTo'])) {
@@ -46,24 +29,19 @@ class CreateFilterTaskRequestBuilder implements TaskRequestBuilderInterface
         }
 
         if (!empty($data['dueDate'])) {
-            $createTaskRequest->setDueDate($data['dueDate'] ? new DateTime($data['dueDate']) : null);
+            $start = new DateTime($data['createdAt'] . ' 00:00:00');
+            $end   = new DateTime($data['createdAt'] . ' 23:59:59');
+            $createTaskRequest->setDueDateFrom($start);
+            $createTaskRequest->setDueDateTo($end);
         }
 
-        if (!empty($data['createdAt'])) {
-            $createTaskRequest->setCreatedAt(new DateTime($data['createdAt']));
+       if (!empty($data['createdAt'])) {
+            $start = new DateTime($data['createdAt'] . ' 00:00:00');
+            $end   = new DateTime($data['createdAt'] . ' 23:59:59');
+            $createTaskRequest->setCreatedAtFrom($start);
+            $createTaskRequest->setCreatedAtTo($end);
         }
 
         return $createTaskRequest;
     }
-
-    private function validateStatus(?string $status): ?Status
-    {
-        return $status ? Status::tryFrom($status) : null;
-    }
-
-    private function validatePriority(?string $priority): ?Priority
-    {
-        return $priority ? Priority::tryFrom($priority) : null;
-    }
-
 }

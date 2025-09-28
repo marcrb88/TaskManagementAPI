@@ -4,7 +4,7 @@ namespace App\Application\Service\Response;
 
 use App\Application\Response\BaseResponse;
 
-class DataValidatorResponse extends BaseResponse
+class CreateTaskDataValidatorResponse extends BaseResponse
 {
     private bool $isValid;
 
