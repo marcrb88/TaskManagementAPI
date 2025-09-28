@@ -80,5 +80,12 @@ class MySqlTaskRepository implements TaskRepositoryInterface
 
         return $qb->getQuery()->getResult();
     }
+
+    public function findOneBy(array $criteria): ?Task
+    {
+        return $this->entityManager
+            ->getRepository(Task::class)
+            ->findOneBy($criteria);
+    }
         
 }

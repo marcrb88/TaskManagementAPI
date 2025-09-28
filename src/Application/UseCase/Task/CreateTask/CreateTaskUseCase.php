@@ -25,33 +25,32 @@ class CreateTaskUseCase
         $this->userRepository = $userRepository;
     }
 
-    public function execute(CreateTaskRequest $request): CreateTaskResponse
+    public function execute(CreateUpdateTaskRequest $request): CreateTaskResponse
     {   
         $createTaskResponse = new CreateTaskResponse('Task created successfully');
         $createTaskResponse->setCodeStatus(Response::HTTP_CREATED);
         
-        $task = new Task(
-            $request->getTitle(),
-            $request->getDescription()
-        );
-
+        $task = new Task();
+        $task->setTitle($request->getTitle())
+            ->setDescription($request->getDescription())
+            ->setStatus($request->getStatus())
+            ->setPriority($request->getPriority())
+            ->setDueDate($request->getDueDate())
+            ->setCreatedAt($request->getCreatedAt())
+            ->setUpdatedAt($request->getUpdatedAt());
+            
         if ($request->getAssignedTo()) {
             $user = $this->userRepository->findById($request->getAssignedTo());
             $task->setAssignedTo($user);
         }
 
-        $task->setStatus($request->getStatus());
-        $task->setPriority($request->getPriority());
-        $task->setDueDate($request->getDueDate());
-        $task->setCreatedAt($request->getCreatedAt());
-        $task->setUpdatedAt($request->getUpdatedAt());
-
 
         try {
             $this->taskRepository->save($task);
         } catch (Exception $e) {
-            $createTaskResponse->setCodeStatus($e->getCode() ?: Response::HTTP_INTERNAL_SERVER_ERROR);
-            $createTaskResponse->setMessage('Error creating task: ' . $e->getMessage());
+            $createTaskResponse->setCodeStatus(Response::HTTP_INTERNAL_SERVER_ERROR);
+            $createTaskResponse->setMessage(
+            'Error creating task (MySQL code ' . $e->getCode() . '): ' . $e->getMessage());
             return $createTaskResponse;
         }
 

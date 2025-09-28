@@ -11,11 +11,13 @@ use App\Application\Factory\TaskRequestBuilderFactory;
 use App\Application\Service\Task\CreateTaskDataValidator;
 use App\Application\Service\Task\FilterTaskDataValidator;
 use App\Application\Service\Task\UpdateTaskDataValidator;
+use App\Application\UseCase\Task\DeleteTask\DeleteTaskRequest;
 use App\Application\UseCase\Task\GetTaskDetail\GetTaskDetailRequest;
 use App\Application\UseCase\Task\GetTaskDetail\GetTaskDetailUseCase;
 use App\Application\UseCase\Task\ListTask\ListTaskUseCase;
 use App\Application\UseCase\Task\UpdateTask\UpdateTaskUseCase;
 use Ramsey\Uuid\Nonstandard\Uuid;
+use App\Application\UseCase\Task\DeleteTask\DeleteTaskUseCase;
 
 class TaskController
 {
@@ -27,6 +29,7 @@ class TaskController
     private GetTaskDetailUseCase $getTaskDetailUse;
     private UpdateTaskUseCase $updateTaskUseCase;
     private UpdateTaskDataValidator $updateTaskDataValidator;
+    private DeleteTaskUseCase $deleteTaskUseCase;
 
     public function __construct
     (
@@ -37,7 +40,8 @@ class TaskController
         FilterTaskDataValidator $filterTaskDataValidator,
         GetTaskDetailUseCase $getTaskDetailUse,
         UpdateTaskUseCase $updateTaskUseCase,
-        UpdateTaskDataValidator $updateTaskDataValidator
+        UpdateTaskDataValidator $updateTaskDataValidator,
+        DeleteTaskUseCase $deleteTaskUseCase
     )
     {
         $this->createTaskUseCase = $createTaskUseCase;
@@ -48,6 +52,7 @@ class TaskController
         $this->getTaskDetailUse = $getTaskDetailUse;
         $this->updateTaskUseCase = $updateTaskUseCase;
         $this->updateTaskDataValidator = $updateTaskDataValidator;
+        $this->deleteTaskUseCase = $deleteTaskUseCase;
     }
     
     #[Route('/api/tasks', methods: ['POST'])]
@@ -182,6 +187,46 @@ class TaskController
         
         //Execute use case to obtain task details
         $listTasksResponse = $this->updateTaskUseCase->execute($createUpdateTaskRequest);
+        
+        return new JsonResponse(
+            [
+                'message' => $listTasksResponse->getMessage(),
+                'statusCode' => $listTasksResponse->getCodeStatus()
+            ],
+            $listTasksResponse->getCodeStatus()
+        );
+    }
+
+    #[Route('/api/tasks/{id}', methods: ['DELETE'])]
+    public function deleteTask(Request $request): JsonResponse
+    {
+        //Recieve id from path request
+        $id = $request->attributes->get('id');
+
+        if (empty($id)) {
+            return new JsonResponse(
+                [
+                    'message' => 'Task ID is required.',
+                    'statusCode' => Response::HTTP_BAD_REQUEST
+                ],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
+        if (!Uuid::isValid($id)) {
+            return new JsonResponse(
+                [
+                    'message' => 'Task ID is not a valid UUID.',
+                    'statusCode' => Response::HTTP_BAD_REQUEST
+                ],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
+        $deleteTaskRequest = new DeleteTaskRequest($id);
+        
+        //Execute use case to obtain task details
+        $listTasksResponse = $this->deleteTaskUseCase->execute($deleteTaskRequest);
         
         return new JsonResponse(
             [
