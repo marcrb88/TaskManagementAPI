@@ -36,7 +36,7 @@ class UpdateTaskUseCase
         $currentStatus = $task->getStatus();
 
         //Business rules of the technical test: a completed task cannot transition to another status.
-        if (!empty($data['status']) && $currentStatus->value === Status::Completed && $createUpdateTaskRequest->getStatus()->value !== Status::Completed) {
+        if (!empty($createUpdateTaskRequest->getStatus()->value) && $currentStatus->value === Status::Completed && $createUpdateTaskRequest->getStatus()->value !== Status::Completed) {
             $updateTaskResponse->setMessage('A completed task cannot change to another status.');
             $updateTaskResponse->setCodeStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
             return $updateTaskResponse;
@@ -49,8 +49,8 @@ class UpdateTaskUseCase
             Status::Completed->value   => [] 
         ];
 
-        if (!empty($data['status']) && !in_array($createUpdateTaskRequest->getStatus()->value, $validTransitions[$currentStatus->value])) {
-            $updateTaskResponse->setMessage("Invalid status transition: The current task status is: ". $currentStatus->value. " and you want to change status to ".$newStatus->value .". Operation not allowed. The task has to follow the following schema: pending -> in_progress -> completed");
+        if (!empty($createUpdateTaskRequest->getStatus()->value) && !in_array($createUpdateTaskRequest->getStatus()->value, $validTransitions[$currentStatus->value])) {
+            $updateTaskResponse->setMessage("Invalid status transition: The current task status is: ". $currentStatus->value. " and you want to change status to ".$createUpdateTaskRequest->getStatus()->value .". Operation not allowed. The task has to follow the following schema: pending -> in_progress -> completed");
             $updateTaskResponse->setCodeStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
             return $updateTaskResponse;
         }
