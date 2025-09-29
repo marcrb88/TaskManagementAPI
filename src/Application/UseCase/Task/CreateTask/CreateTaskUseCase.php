@@ -49,19 +49,6 @@ class CreateTaskUseCase
             $task->setAssignedTo($user);
         }
 
-<<<<<<< HEAD
-=======
-<<<<<<< Updated upstream
-        $task->setStatus($request->getStatus());
-        $task->setPriority($request->getPriority());
-        $task->setDueDate($request->getDueDate());
-        $task->setCreatedAt($request->getCreatedAt());
-        $task->setUpdatedAt($request->getUpdatedAt());
-
->>>>>>> update-task
-
-=======
->>>>>>> Stashed changes
         try {
             $this->taskRepository->save($task);
         } catch (Exception $e) {
