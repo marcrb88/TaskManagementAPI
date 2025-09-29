@@ -11,6 +11,8 @@ use App\Application\Factory\TaskRequestBuilderFactory;
 use App\Application\Service\Task\CreateTaskDataValidator;
 use App\Application\Service\Task\FilterTaskDataValidator;
 use App\Application\Service\Task\UpdateTaskDataValidator;
+use App\Application\UseCase\Task\AssignTaskToUser\AssignTaskToUserRequest;
+use App\Application\UseCase\Task\AssignTaskToUser\AssignTaskToUserUseCase;
 use App\Application\UseCase\Task\DeleteTask\DeleteTaskRequest;
 use App\Application\UseCase\Task\GetTaskDetail\GetTaskDetailRequest;
 use App\Application\UseCase\Task\GetTaskDetail\GetTaskDetailUseCase;
@@ -30,6 +32,7 @@ class TaskController
     private UpdateTaskUseCase $updateTaskUseCase;
     private UpdateTaskDataValidator $updateTaskDataValidator;
     private DeleteTaskUseCase $deleteTaskUseCase;
+    private AssignTaskToUserUseCase $assignTaskToUserUse;
 
     public function __construct
     (
@@ -41,7 +44,8 @@ class TaskController
         GetTaskDetailUseCase $getTaskDetailUse,
         UpdateTaskUseCase $updateTaskUseCase,
         UpdateTaskDataValidator $updateTaskDataValidator,
-        DeleteTaskUseCase $deleteTaskUseCase
+        DeleteTaskUseCase $deleteTaskUseCase,
+        AssignTaskToUserUseCase $assignTaskToUserUse
     )
     {
         $this->createTaskUseCase = $createTaskUseCase;
@@ -53,6 +57,7 @@ class TaskController
         $this->updateTaskUseCase = $updateTaskUseCase;
         $this->updateTaskDataValidator = $updateTaskDataValidator;
         $this->deleteTaskUseCase = $deleteTaskUseCase;
+        $this->assignTaskToUserUse = $assignTaskToUserUse;
     }
     
     #[Route('/api/tasks', methods: ['POST'])]
@@ -227,6 +232,28 @@ class TaskController
         
         //Execute use case to obtain task details
         $listTasksResponse = $this->deleteTaskUseCase->execute($deleteTaskRequest);
+        
+        return new JsonResponse(
+            [
+                'message' => $listTasksResponse->getMessage(),
+                'statusCode' => $listTasksResponse->getCodeStatus()
+            ],
+            $listTasksResponse->getCodeStatus()
+        );
+    }
+
+    #[Route('/api/tasks/{id}/assign', methods: ['PATCH'])]
+    public function assignTaskToUser(Request $request): JsonResponse
+    {
+        //Recieve id from path request
+        $taskId = $request->attributes->get('id');
+        $data = json_decode($request->getContent(), true);
+        $assignedToId = $data['assignedTo'];
+
+        $assignTaskToUserRequest = new AssignTaskToUserRequest($taskId, $assignedToId);
+        
+        //Execute use case to assign task to user 
+        $listTasksResponse = $this->assignTaskToUserUse->execute($assignTaskToUserRequest);
         
         return new JsonResponse(
             [
