@@ -3,20 +3,12 @@
 namespace App\Application\Service\Task;
 
 use App\Application\Service\Response\TaskDataValidatorResponse;
-use App\Domain\Repository\UserRepositoryInterface;
 use DateTime;
 use Ramsey\Uuid\Uuid;
 use App\Domain\Repository\DataValidatorInterface;
 
 class CreateTaskDataValidator implements DataValidatorInterface
 {
-    public function __construct
-    (
-        private UserRepositoryInterface $userRepository
-    ) {
-        $this->userRepository = $userRepository;
-    }
-
     public function validate(array $data): TaskDataValidatorResponse
     {
         $dataValidatorResponse = new TaskDataValidatorResponse(true);
@@ -41,13 +33,6 @@ class CreateTaskDataValidator implements DataValidatorInterface
             if (!Uuid::isValid($data['assignedTo'])) {
                 $dataValidatorResponse->setIsValid(false);
                 $dataValidatorResponse->setMessage('Assigned user ID is not a valid UUID.');
-                return $dataValidatorResponse;
-            }
-
-            $user = $this->userRepository->findById($data['assignedTo']);
-            if (empty($user)) {
-                $dataValidatorResponse->setIsValid(false);
-                $dataValidatorResponse->setMessage('Assigned user does not exist.');
                 return $dataValidatorResponse;
             }
         }

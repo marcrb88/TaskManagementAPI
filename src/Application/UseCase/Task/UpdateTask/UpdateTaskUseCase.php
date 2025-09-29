@@ -55,6 +55,22 @@ class UpdateTaskUseCase
             return $updateTaskResponse;
         }
 
+        //Fulfill Task entity with request values
+        $this->updateTaskFields($task, $createUpdateTaskRequest);
+
+        try {
+            $this->taskRepository->save($task);
+        } catch (Throwable $e) {
+            $updateTaskResponse->setCodeStatus($e->getCode() ?: Response::HTTP_INTERNAL_SERVER_ERROR);
+            $updateTaskResponse->setMessage('Error obtaining tasks: ' . $e->getMessage());
+            return $updateTaskResponse;
+        }
+
+        return $updateTaskResponse;
+    }
+
+    private function updateTaskFields($task, CreateUpdateTaskRequest $createUpdateTaskRequest): void
+    {
         if (!empty($createUpdateTaskRequest->getTitle())) {
             $task->setTitle($createUpdateTaskRequest->getTitle());
         }
@@ -79,16 +95,6 @@ class UpdateTaskUseCase
         if (!empty($createUpdateTaskRequest->getUpdatedAt())) {
             $task->setUpdatedAt($createUpdateTaskRequest->getUpdatedAt());
         }
-
-        try {
-            $this->taskRepository->save($task);
-        } catch (Throwable $e) {
-            $updateTaskResponse->setCodeStatus($e->getCode() ?: Response::HTTP_INTERNAL_SERVER_ERROR);
-            $updateTaskResponse->setMessage('Error obtaining tasks: ' . $e->getMessage());
-            return $updateTaskResponse;
-        }
-
-        return $updateTaskResponse;
     }
 }
 

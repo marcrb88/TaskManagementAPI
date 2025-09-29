@@ -3,7 +3,6 @@
 namespace App\Application\UseCase\Task\CreateTask;
 
 use App\Infrastructure\Repository\MySqlTaskRepository;
-use App\Application\UseCase\Task\CreateTask\CreateTaskRequest;
 use App\Application\UseCase\Task\CreateTask\CreateTaskResponse;
 use App\Domain\Model\Task;
 use App\Infrastructure\Repository\MySqlUserRepository;
@@ -41,10 +40,28 @@ class CreateTaskUseCase
             
         if ($request->getAssignedTo()) {
             $user = $this->userRepository->findById($request->getAssignedTo());
+            if (empty($user)) {
+                $createTaskResponse->setCodeStatus(Response::HTTP_NOT_FOUND);
+                $createTaskResponse->setMessage('User not found.');
+                return $createTaskResponse;
+            }
+
             $task->setAssignedTo($user);
         }
 
+<<<<<<< HEAD
+=======
+<<<<<<< Updated upstream
+        $task->setStatus($request->getStatus());
+        $task->setPriority($request->getPriority());
+        $task->setDueDate($request->getDueDate());
+        $task->setCreatedAt($request->getCreatedAt());
+        $task->setUpdatedAt($request->getUpdatedAt());
 
+>>>>>>> update-task
+
+=======
+>>>>>>> Stashed changes
         try {
             $this->taskRepository->save($task);
         } catch (Exception $e) {
