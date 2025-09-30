@@ -36,7 +36,10 @@ class UpdateTaskUseCase
         $currentStatus = $task->getStatus();
 
         //Business rules of the technical test: a completed task cannot transition to another status.
-        if (!empty($createUpdateTaskRequest->getStatus()->value) && $currentStatus->value === Status::Completed && $createUpdateTaskRequest->getStatus()->value !== Status::Completed) {
+        if (!empty($createUpdateTaskRequest->getStatus()->value) 
+            && $currentStatus->value === Status::Completed->value
+            && $createUpdateTaskRequest->getStatus()->value !== Status::Completed->value) {
+                
             $updateTaskResponse->setMessage('A completed task cannot change to another status.');
             $updateTaskResponse->setCodeStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
             return $updateTaskResponse;
