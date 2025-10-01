@@ -24,22 +24,22 @@ class CreateTaskUseCase
         $this->userRepository = $userRepository;
     }
 
-    public function execute(CreateUpdateTaskRequest $request): CreateTaskResponse
+    public function execute(CreateTaskRequest $createTaskRequest): CreateTaskResponse
     {   
         $createTaskResponse = new CreateTaskResponse('Task created successfully');
         $createTaskResponse->setCodeStatus(Response::HTTP_CREATED);
         
         $task = new Task();
-        $task->setTitle($request->getTitle())
-            ->setDescription($request->getDescription())
-            ->setStatus($request->getStatus())
-            ->setPriority($request->getPriority())
-            ->setDueDate($request->getDueDate())
-            ->setCreatedAt($request->getCreatedAt())
-            ->setUpdatedAt($request->getUpdatedAt());
+        $task->setTitle($createTaskRequest->getTitle())
+            ->setDescription($createTaskRequest->getDescription())
+            ->setStatus($createTaskRequest->getStatus())
+            ->setPriority($createTaskRequest->getPriority())
+            ->setDueDate($createTaskRequest->getDueDate())
+            ->setCreatedAt($createTaskRequest->getCreatedAt())
+            ->setUpdatedAt($createTaskRequest->getUpdatedAt());
             
-        if ($request->getAssignedTo()) {
-            $user = $this->userRepository->findById($request->getAssignedTo());
+        if ($createTaskRequest->getAssignedTo()) {
+            $user = $this->userRepository->findById($createTaskRequest->getAssignedTo());
             if (empty($user)) {
                 $createTaskResponse->setCodeStatus(Response::HTTP_NOT_FOUND);
                 $createTaskResponse->setMessage('User not found.');

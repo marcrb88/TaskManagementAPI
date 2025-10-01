@@ -2,23 +2,19 @@
 
 namespace App\Application\Service\Task;
 
-use App\Application\UseCase\Task\CreateTask\CreateUpdateTaskRequest;
+use App\Application\UseCase\Task\CreateTask\CreateTaskRequest;
 use App\Domain\Repository\TaskRequestBuilderInterface;
 use App\Domain\ValueObject\Status;
 use App\Domain\ValueObject\Priority;
 use DateTime;
 
 
-class CreateUpdateTaskRequestBuilder implements TaskRequestBuilderInterface
+class CreateTaskRequestBuilder implements TaskRequestBuilderInterface
 {
 
-    public function build(array $data): CreateUpdateTaskRequest
+    public function build(array $data): CreateTaskRequest
     {
-        $createTaskRequest = new CreateUpdateTaskRequest();
-
-        if (!empty($data['id'])) {
-            $createTaskRequest->setId($data['id']);
-        }
+        $createTaskRequest = new CreateTaskRequest();
 
         if (!empty($data['title'])) {
             $createTaskRequest->setTitle($data['title']);

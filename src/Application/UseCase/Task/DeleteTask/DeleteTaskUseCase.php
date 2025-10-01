@@ -3,7 +3,6 @@
 namespace App\Application\UseCase\Task\DeleteTask;
 
 use App\Infrastructure\Repository\MySqlTaskRepository;
-use App\Application\UseCase\Task\GetTaskDetail\GetTaskDetailResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 

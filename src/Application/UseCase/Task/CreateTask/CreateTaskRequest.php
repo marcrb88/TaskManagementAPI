@@ -6,9 +6,8 @@ use DateTime;
 use App\Domain\ValueObject\Status;
 use App\Domain\ValueObject\Priority;
 
-class CreateUpdateTaskRequest
+class CreateTaskRequest
 {
-    private ?string $id = null;
     private ?string $title = null;
     private ?string $description = null;
     private Status $status = Status::Pending;
@@ -22,18 +21,6 @@ class CreateUpdateTaskRequest
     {
         $this->createdAt = new DateTime();
         $this->updatedAt = new DateTime();
-    }
-
-    public function getId(): ?string
-    {
-        return $this->id;
-    }
-
-    public function setId(?string $id = null): self
-    {
-        $this->id = $id;
-        
-        return $this;
     }
 
     public function getTitle(): ?string
