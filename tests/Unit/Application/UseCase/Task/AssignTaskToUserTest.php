@@ -22,8 +22,8 @@ class AssignTaskToUserTest extends TestCase
         $this->userRepository = $this->createMock(MySqlUserRepository::class);
     }
 
-    /*
-        Test we assign task to user successfully scenario.
+    /** 
+    *    Test we assign task to user successfully scenario.
     */
 
     public function testAssignTaskToUserSuccess(): void
