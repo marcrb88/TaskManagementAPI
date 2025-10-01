@@ -60,7 +60,7 @@ class AssignTaskToUserTest extends TestCase
     }
 
     /**
-     * Test we don't find task escenario
+     * Test we don't find task scenario.
      */
     public function testTaskNotFound(): void
     {
@@ -86,7 +86,7 @@ class AssignTaskToUserTest extends TestCase
     }
 
     /**
-     * Test we don't find user escenario
+     * Test we don't find user scenario.
      */
     public function testUserNotFound(): void
     {
@@ -120,7 +120,7 @@ class AssignTaskToUserTest extends TestCase
     }
 
     /**
-     * Test exception thrown when saving task escenario
+     * Test exception thrown when saving task scenario.
      */
     public function testExceptionDuringAssignment(): void
     {

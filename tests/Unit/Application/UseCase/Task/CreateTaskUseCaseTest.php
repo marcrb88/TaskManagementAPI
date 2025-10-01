@@ -3,7 +3,7 @@
 namespace App\Tests\Unit\Application\UseCase\Task;
 
 use App\Application\UseCase\Task\CreateTask\CreateTaskUseCase;
-use App\Application\UseCase\Task\CreateTask\CreateUpdateTaskRequest;
+use App\Application\UseCase\Task\CreateTask\CreateTaskRequest;
 use App\Infrastructure\Repository\MySqlTaskRepository;
 use App\Infrastructure\Repository\MySqlUserRepository;
 use App\Domain\Model\Task;
@@ -29,7 +29,7 @@ class CreateTaskUseCaseTest extends TestCase
      */
     public function testCreateTaskSuccessfullyWithoutAssignedUser(): void
     {
-        $request = $this->createMock(CreateUpdateTaskRequest::class);
+        $request = $this->createMock(CreateTaskRequest::class);
         $request->method('getTitle')->willReturn('Test Task');
         $request->method('getDescription')->willReturn('Task description');
         $request->method('getStatus')->willReturn(Status::Pending);
@@ -59,7 +59,7 @@ class CreateTaskUseCaseTest extends TestCase
         $userId = 'user-uuid';
         $user = $this->createMock(User::class);
 
-        $request = $this->createMock(CreateUpdateTaskRequest::class);
+        $request = $this->createMock(CreateTaskRequest::class);
         $request->method('getTitle')->willReturn('Test Task');
         $request->method('getDescription')->willReturn('Task description');
         $request->method('getStatus')->willReturn(Status::Pending);
@@ -94,7 +94,7 @@ class CreateTaskUseCaseTest extends TestCase
     {
         $userId = 'user-uuid';
 
-        $request = $this->createMock(CreateUpdateTaskRequest::class);
+        $request = $this->createMock(CreateTaskRequest::class);
         $request->method('getTitle')->willReturn('Test Task');
         $request->method('getDescription')->willReturn('Task description');
         $request->method('getStatus')->willReturn(Status::InProgress);
@@ -126,7 +126,7 @@ class CreateTaskUseCaseTest extends TestCase
      */
     public function testExceptionDuringTaskCreation(): void
     {
-        $request = $this->createMock(CreateUpdateTaskRequest::class);
+        $request = $this->createMock(CreateTaskRequest::class);
         $request->method('getTitle')->willReturn('Test Task');
         $request->method('getDescription')->willReturn('Task description');
         $request->method('getStatus')->willReturn(Status::InProgress);

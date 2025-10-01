@@ -1,8 +1,9 @@
 <?php
 namespace App\Application\Factory;
 
-use App\Application\Service\Task\CreateUpdateTaskRequestBuilder;
 use App\Application\Service\Task\CreateFilterTaskRequestBuilder;
+use App\Application\Service\Task\CreateTaskRequestBuilder;
+use App\Application\Service\Task\UpdateTaskRequestBuilder;
 use App\Domain\Repository\TaskRequestBuilderInterface;
 
 class TaskRequestBuilderFactory
@@ -14,8 +15,8 @@ class TaskRequestBuilderFactory
     public function getBuilder(string $type): TaskRequestBuilderInterface
     {
         return match ($type) {
-            self::TYPE_UPDATE,
-            self::TYPE_CREATE => new CreateUpdateTaskRequestBuilder(),
+            self::TYPE_UPDATE => new UpdateTaskRequestBuilder(),
+            self::TYPE_CREATE => new CreateTaskRequestBuilder(),
             self::TYPE_FILTER => new CreateFilterTaskRequestBuilder(),
             default => throw new \InvalidArgumentException("Unknown builder type: $type"),
         };
