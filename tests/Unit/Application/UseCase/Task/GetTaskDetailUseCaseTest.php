@@ -4,18 +4,20 @@ namespace App\Tests\Unit\Application\UseCase\Task;
 
 use App\Application\UseCase\Task\GetTaskDetail\GetTaskDetailUseCase;
 use App\Application\UseCase\Task\GetTaskDetail\GetTaskDetailRequest;
-use App\Infrastructure\Repository\MySqlTaskRepository;
 use App\Domain\Model\Task;
+use App\Domain\Repository\TaskRepositoryInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class GetTaskDetailUseCaseTest extends TestCase
 {
-    private $taskRepository;
+    /** @var TaskRepositoryInterface&MockObject */
+    private $taskRepositoryInterface;
 
     protected function setUp(): void
     {
-        $this->taskRepository = $this->createMock(MySqlTaskRepository::class);
+        $this->taskRepositoryInterface = $this->createMock(TaskRepositoryInterface::class);
     }
 
     /**
@@ -26,13 +28,13 @@ class GetTaskDetailUseCaseTest extends TestCase
         $taskId = 'task-uuid';
         $task = $this->createMock(Task::class);
 
-        $this->taskRepository
+        $this->taskRepositoryInterface
             ->expects($this->once())
             ->method('findById')
             ->with($taskId)
             ->willReturn($task);
 
-        $useCase = new GetTaskDetailUseCase($this->taskRepository);
+        $useCase = new GetTaskDetailUseCase($this->taskRepositoryInterface);
         $request = new GetTaskDetailRequest($taskId);
         $response = $useCase->execute($request);
 
@@ -48,13 +50,13 @@ class GetTaskDetailUseCaseTest extends TestCase
     {
         $taskId = 'task-uuid';
 
-        $this->taskRepository
+        $this->taskRepositoryInterface
             ->expects($this->once())
             ->method('findById')
             ->with($taskId)
             ->willReturn(null);
 
-        $useCase = new GetTaskDetailUseCase($this->taskRepository);
+        $useCase = new GetTaskDetailUseCase($this->taskRepositoryInterface);
         $request = new GetTaskDetailRequest($taskId);
         $response = $useCase->execute($request);
 
@@ -70,11 +72,11 @@ class GetTaskDetailUseCaseTest extends TestCase
     {
         $taskId = 'task-uuid';
 
-        $this->taskRepository
+        $this->taskRepositoryInterface
             ->method('findById')
             ->will($this->throwException(new \Exception('Database error', Response::HTTP_INTERNAL_SERVER_ERROR)));
 
-        $useCase = new GetTaskDetailUseCase($this->taskRepository);
+        $useCase = new GetTaskDetailUseCase($this->taskRepositoryInterface);
         $request = new GetTaskDetailRequest($taskId);
         $response = $useCase->execute($request);
 

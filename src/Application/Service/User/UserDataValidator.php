@@ -4,8 +4,9 @@ namespace App\Application\Service\User;
 
 use App\Application\Service\Response\DataValidatorResponse;
 use App\Domain\Repository\UserRepositoryInterface;
+use App\Domain\Repository\DataValidatorInterface;
 
-class UserDataValidator
+class UserDataValidator implements DataValidatorInterface
 {
     public function __construct
     (

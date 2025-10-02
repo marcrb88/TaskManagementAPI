@@ -2,21 +2,21 @@
 
 namespace App\Application\UseCase\Task\GetTaskDetail;
 
-use App\Infrastructure\Repository\MySqlTaskRepository;
 use App\Application\UseCase\Task\GetTaskDetail\GetTaskDetailResponse;
+use App\Domain\Repository\TaskRepositoryInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 class GetTaskDetailUseCase
 {
-    private MySqlTaskRepository $taskRepository;
+    private TaskRepositoryInterface $taskRepositoryInterface;
 
     public function __construct
     (
-        MySqlTaskRepository $taskRepository
+        TaskRepositoryInterface $taskRepositoryInterface
     )
     {
-        $this->taskRepository = $taskRepository;
+        $this->taskRepositoryInterface = $taskRepositoryInterface;
         
     }
    public function execute(GetTaskDetailRequest $getTaskDetailRequest): GetTaskDetailResponse
@@ -25,7 +25,7 @@ class GetTaskDetailUseCase
         $getTaskDetailResponse->setCodeStatus(Response::HTTP_OK);
 
         try {
-            $task = $this->taskRepository->findById($getTaskDetailRequest->getId());
+            $task = $this->taskRepositoryInterface->findById($getTaskDetailRequest->getId());
         } catch (Throwable $e) {
             $getTaskDetailResponse->setCodeStatus($e->getCode() ?: Response::HTTP_INTERNAL_SERVER_ERROR);
             $getTaskDetailResponse->setMessage('Error obtaining tasks: ' . $e->getMessage());

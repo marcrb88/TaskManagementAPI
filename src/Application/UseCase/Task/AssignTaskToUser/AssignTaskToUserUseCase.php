@@ -2,24 +2,24 @@
 
 namespace App\Application\UseCase\Task\AssignTaskToUser;
 
-use App\Infrastructure\Repository\MySqlTaskRepository;
-use App\Infrastructure\Repository\MySqlUserRepository;
+use App\Domain\Repository\TaskRepositoryInterface;
+use App\Domain\Repository\UserRepositoryInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 class AssignTaskToUserUseCase
 {
-    private MySqlTaskRepository $taskRepository;
-    private MySqlUserRepository $userRepository;
+    private TaskRepositoryInterface $taskRepositoryInterface;
+    private UserRepositoryInterface $userRepositoryInterface;
 
     public function __construct
     (
-        MySqlTaskRepository $taskRepository,
-        MySqlUserRepository $userRepository
+        TaskRepositoryInterface $taskRepositoryInterface,
+        UserRepositoryInterface $userRepositoryInterface
     )
     {
-        $this->taskRepository = $taskRepository;
-        $this->userRepository = $userRepository;
+        $this->taskRepositoryInterface = $taskRepositoryInterface;
+        $this->userRepositoryInterface = $userRepositoryInterface;
         
     }
 
@@ -30,7 +30,7 @@ class AssignTaskToUserUseCase
 
         try {
 
-            $task = $this->taskRepository->findById($assignTaskToUserRequest->getId());
+            $task = $this->taskRepositoryInterface->findById($assignTaskToUserRequest->getId());
 
             if (empty($task)) {
                 $assignTaskToUserResponse->setMessage('No task found to assign to user');
@@ -38,7 +38,7 @@ class AssignTaskToUserUseCase
                 return $assignTaskToUserResponse;
             }
 
-            $user = $this->userRepository->findById($assignTaskToUserRequest->getAssignedToId());
+            $user = $this->userRepositoryInterface->findById($assignTaskToUserRequest->getAssignedToId());
 
             if (empty($user)) {
                 $assignTaskToUserResponse->setMessage('No user found to be assigned to task');
@@ -48,7 +48,7 @@ class AssignTaskToUserUseCase
 
             $task->setAssignedTo($user);
 
-            $this->taskRepository->save($task);
+            $this->taskRepositoryInterface->save($task);
             
         } catch (Throwable $e) {
             $assignTaskToUserResponse->setCodeStatus($e->getCode() ?: Response::HTTP_INTERNAL_SERVER_ERROR);

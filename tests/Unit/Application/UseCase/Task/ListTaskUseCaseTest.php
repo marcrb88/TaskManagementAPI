@@ -4,18 +4,20 @@ namespace App\Tests\Unit\Application\UseCase\Task;
 
 use App\Application\UseCase\Task\ListTask\ListTaskUseCase;
 use App\Application\UseCase\Task\ListTask\CreateFilterRequest;
-use App\Infrastructure\Repository\MySqlTaskRepository;
 use App\Domain\Model\Task;
+use App\Domain\Repository\TaskRepositoryInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class ListTaskUseCaseTest extends TestCase
 {
-    private $taskRepository;
+    /** @var TaskRepositoryInterface&MockObject */
+    private $taskRepositoryInterface;
 
     protected function setUp(): void
     {
-        $this->taskRepository = $this->createMock(MySqlTaskRepository::class);
+        $this->taskRepositoryInterface = $this->createMock(TaskRepositoryInterface::class);
     }
 
     /**
@@ -28,15 +30,16 @@ class ListTaskUseCaseTest extends TestCase
             $this->createMock(Task::class),
         ];
 
-        $this->taskRepository
+        $this->taskRepositoryInterface
             ->expects($this->once())
             ->method('findAll')
             ->willReturn($tasks);
 
+        /** @var CreateFilterRequest&MockObject $filterRequest */
         $filterRequest = $this->createMock(CreateFilterRequest::class);
         $filterRequest->method('toArray')->willReturn([]);
 
-        $useCase = new ListTaskUseCase($this->taskRepository);
+        $useCase = new ListTaskUseCase($this->taskRepositoryInterface);
         $response = $useCase->execute($filterRequest);
 
         $this->assertEquals('Tasks obtained successfully', $response->getMessage());
@@ -55,16 +58,17 @@ class ListTaskUseCaseTest extends TestCase
 
         $filters = ['status' => 'pending'];
 
-        $this->taskRepository
+        $this->taskRepositoryInterface
             ->expects($this->once())
             ->method('findByFilters')
             ->with($filters)
             ->willReturn($tasks);
 
+        /** @var CreateFilterRequest&MockObject $filterRequest */
         $filterRequest = $this->createMock(CreateFilterRequest::class);
         $filterRequest->method('toArray')->willReturn($filters);
 
-        $useCase = new ListTaskUseCase($this->taskRepository);
+        $useCase = new ListTaskUseCase($this->taskRepositoryInterface);
         $response = $useCase->execute($filterRequest);
 
         $this->assertEquals('Tasks obtained successfully', $response->getMessage());
@@ -77,14 +81,15 @@ class ListTaskUseCaseTest extends TestCase
      */
     public function testNoTasksFound(): void
     {
-        $this->taskRepository
+        $this->taskRepositoryInterface
             ->method('findAll')
             ->willReturn([]);
 
+        /** @var CreateFilterRequest&MockObject $filterRequest */
         $filterRequest = $this->createMock(CreateFilterRequest::class);
         $filterRequest->method('toArray')->willReturn([]);
 
-        $useCase = new ListTaskUseCase($this->taskRepository);
+        $useCase = new ListTaskUseCase($this->taskRepositoryInterface);
         $response = $useCase->execute($filterRequest);
 
         $this->assertEquals('No tasks found', $response->getMessage());
@@ -97,14 +102,15 @@ class ListTaskUseCaseTest extends TestCase
      */
     public function testExceptionDuringListTasks(): void
     {
-        $this->taskRepository
+        $this->taskRepositoryInterface
             ->method('findAll')
             ->will($this->throwException(new \Exception('Database error', Response::HTTP_INTERNAL_SERVER_ERROR)));
 
+        /** @var CreateFilterRequest&MockObject $filterRequest */
         $filterRequest = $this->createMock(CreateFilterRequest::class);
         $filterRequest->method('toArray')->willReturn([]);
 
-        $useCase = new ListTaskUseCase($this->taskRepository);
+        $useCase = new ListTaskUseCase($this->taskRepositoryInterface);
         $response = $useCase->execute($filterRequest);
 
         $this->assertStringContainsString('Error obtaining tasks', $response->getMessage());

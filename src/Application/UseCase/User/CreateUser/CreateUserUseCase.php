@@ -7,18 +7,19 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Domain\Model\User;
 use App\Application\UseCase\User\CreateUser\CreateUserRequest;
 use App\Application\UseCase\User\CreateUser\CreateUserResponse;
+use App\Domain\Repository\UserRepositoryInterface;
 use Throwable;
 
 class CreateUserUseCase
 {
-    private MySqlUserRepository $userRepository;
+    private UserRepositoryInterface $userRepositoryInterface;
 
     public function __construct
     (
-        MySqlUserRepository $userRepository
+        UserRepositoryInterface $userRepositoryInterface
     )
     {
-        $this->userRepository = $userRepository;
+        $this->userRepositoryInterface = $userRepositoryInterface;
     }
 
     public function execute(CreateUserRequest $request): CreateUserResponse
@@ -33,7 +34,7 @@ class CreateUserUseCase
 
         //Save user entity in database
         try {
-            $this->userRepository->save($user);
+            $this->userRepositoryInterface->save($user);
         } catch (Throwable $e) {
             $createUserResponse->setCodeStatus($e->getCode() ?: Response::HTTP_INTERNAL_SERVER_ERROR);
             $createUserResponse->setMessage('Error creating user: ' . $e->getMessage());

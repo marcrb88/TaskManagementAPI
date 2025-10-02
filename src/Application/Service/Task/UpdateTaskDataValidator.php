@@ -2,7 +2,7 @@
 
 namespace App\Application\Service\Task;
 
-use App\Application\Service\Response\TaskDataValidatorResponse;
+use App\Application\Service\Response\DataValidatorResponse;
 use DateTime;
 use App\Domain\ValueObject\Status;
 use Ramsey\Uuid\Uuid;
@@ -10,9 +10,9 @@ use App\Domain\Repository\DataValidatorInterface;
 
 class UpdateTaskDataValidator implements DataValidatorInterface
 {
-    public function validate(array $data): TaskDataValidatorResponse
+    public function validate(array $data): DataValidatorResponse
     {
-        $updateTaskDataValidatorResponse = new TaskDataValidatorResponse(true);
+        $updateTaskDataValidatorResponse = new DataValidatorResponse(true);
 
         if (!empty($data['id'])) {
             if (!Uuid::isValid($data['id'])) {

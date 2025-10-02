@@ -2,20 +2,21 @@
 
 namespace App\Application\UseCase\Task\DeleteTask;
 
+use App\Domain\Repository\TaskRepositoryInterface;
 use App\Infrastructure\Repository\MySqlTaskRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 class DeleteTaskUseCase
 {
-    private MySqlTaskRepository $taskRepository;
+    private TaskRepositoryInterface $taskRepositoryInterface;
 
     public function __construct
     (
-        MySqlTaskRepository $taskRepository
+        TaskRepositoryInterface $taskRepositoryInterface
     )
     {
-        $this->taskRepository = $taskRepository;
+        $this->taskRepositoryInterface = $taskRepositoryInterface;
         
     }
    public function execute(DeleteTaskRequest $deleteTaskRequest): DeleteTaskResponse
@@ -24,7 +25,7 @@ class DeleteTaskUseCase
         $deleteTaskResponse->setCodeStatus(Response::HTTP_OK);
 
         try {
-            $task = $this->taskRepository->findOneBy([
+            $task = $this->taskRepositoryInterface->findOneBy([
                 'id'     => $deleteTaskRequest->getId(),
                 'status' => 'pending',
             ]);
@@ -35,7 +36,7 @@ class DeleteTaskUseCase
                 return $deleteTaskResponse;
             }
 
-            $this->taskRepository->delete($task);
+            $this->taskRepositoryInterface->delete($task);
             
         } catch (Throwable $e) {
             $deleteTaskResponse->setCodeStatus($e->getCode() ?: Response::HTTP_INTERNAL_SERVER_ERROR);

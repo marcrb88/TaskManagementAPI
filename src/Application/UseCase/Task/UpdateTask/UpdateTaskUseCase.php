@@ -3,21 +3,21 @@
 namespace App\Application\UseCase\Task\UpdateTask;
 
 use App\Application\UseCase\Task\UpdateTask\UpdateTaskRequest;
-use App\Infrastructure\Repository\MySqlTaskRepository;
+use App\Domain\Repository\TaskRepositoryInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 use App\Domain\ValueObject\Status;
 
 class UpdateTaskUseCase
 {
-    private MySqlTaskRepository $taskRepository;
+    private TaskRepositoryInterface $taskRepositoryInterface;
 
     public function __construct
     (
-        MySqlTaskRepository $taskRepository
+        TaskRepositoryInterface $taskRepositoryInterface
     )
     {
-        $this->taskRepository = $taskRepository;
+        $this->taskRepositoryInterface = $taskRepositoryInterface;
         
     }
    public function execute(UpdateTaskRequest $updateTaskRequest): UpdateTaskResponse
@@ -25,7 +25,7 @@ class UpdateTaskUseCase
         $updateTaskResponse = new UpdateTaskResponse('Task updated successfully');
         $updateTaskResponse->setCodeStatus(Response::HTTP_OK);
 
-        $task = $this->taskRepository->findById($updateTaskRequest->getId());
+        $task = $this->taskRepositoryInterface->findById($updateTaskRequest->getId());
 
         if (empty($task)) {
             $updateTaskResponse->setMessage('Task not found.');
@@ -49,7 +49,7 @@ class UpdateTaskUseCase
         $validTransitions = [
             Status::Pending->value     => [Status::InProgress->value],
             Status::InProgress->value => [Status::Completed->value],
-            Status::Completed->value   => [] 
+            Status::Completed->value   => [Status::Completed->value] 
         ];
 
         if (!empty($updateTaskRequest->getStatus()->value) && !in_array($updateTaskRequest->getStatus()->value, $validTransitions[$currentStatus->value])) {
@@ -62,7 +62,7 @@ class UpdateTaskUseCase
         $this->updateTaskFields($task, $updateTaskRequest);
 
         try {
-            $this->taskRepository->save($task);
+            $this->taskRepositoryInterface->save($task);
         } catch (Throwable $e) {
             $updateTaskResponse->setCodeStatus($e->getCode() ?: Response::HTTP_INTERNAL_SERVER_ERROR);
             $updateTaskResponse->setMessage('Error obtaining tasks: ' . $e->getMessage());

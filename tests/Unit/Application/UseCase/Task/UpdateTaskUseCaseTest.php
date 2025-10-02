@@ -5,21 +5,24 @@ namespace App\Tests\Application\UseCase\Task\UpdateTask;
 use App\Application\UseCase\Task\UpdateTask\UpdateTaskRequest;
 use App\Application\UseCase\Task\UpdateTask\UpdateTaskUseCase;
 use App\Domain\Model\Task;
+use App\Domain\Repository\TaskRepositoryInterface;
 use App\Domain\ValueObject\Status;
 use App\Domain\ValueObject\Priority;
-use App\Infrastructure\Repository\MySqlTaskRepository;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class UpdateTaskUseCaseTest extends TestCase
 {
-    private $taskRepository;
-    private $useCase;
+    /** @var TaskRepositoryInterface&MockObject */
+    private $taskRepositoryInterface;
+    private UpdateTaskUseCase $useCase;
+
 
     protected function setUp(): void
     {
-        $this->taskRepository = $this->createMock(MySqlTaskRepository::class);
-        $this->useCase = new UpdateTaskUseCase($this->taskRepository);
+        $this->taskRepositoryInterface = $this->createMock(TaskRepositoryInterface::class);
+        $this->useCase = new UpdateTaskUseCase($this->taskRepositoryInterface);
     }
 
     /**
@@ -27,7 +30,7 @@ class UpdateTaskUseCaseTest extends TestCase
      */
     public function testUpdateNonExistingTask(): void
     {
-        $this->taskRepository->method('findById')->willReturn(null);
+        $this->taskRepositoryInterface->method('findById')->willReturn(null);
 
         $request = (new UpdateTaskRequest())
             ->setId("task-uuid")
@@ -50,7 +53,7 @@ class UpdateTaskUseCaseTest extends TestCase
             ->setDescription("Retrieve hotel info from Booking and store in S3")
             ->setStatus(Status::Completed);
 
-        $this->taskRepository->method('findById')->willReturn($existingTask);
+        $this->taskRepositoryInterface->method('findById')->willReturn($existingTask);
 
         $request = (new UpdateTaskRequest())
             ->setId($existingTask->getId())
@@ -73,7 +76,7 @@ class UpdateTaskUseCaseTest extends TestCase
             ->setDescription("Prepare a structure to easily add AI API integrations")
             ->setStatus(Status::Pending);
 
-        $this->taskRepository->method('findById')->willReturn($existingTask);
+        $this->taskRepositoryInterface->method('findById')->willReturn($existingTask);
 
         $request = (new UpdateTaskRequest())
             ->setId($existingTask->getId())
@@ -97,9 +100,9 @@ class UpdateTaskUseCaseTest extends TestCase
             ->setStatus(Status::Pending)
             ->setPriority(Priority::Low);
 
-        $this->taskRepository->method('findById')->willReturn($existingTask);
+        $this->taskRepositoryInterface->method('findById')->willReturn($existingTask);
 
-        $this->taskRepository
+        $this->taskRepositoryInterface
             ->expects($this->once())
             ->method('save');
 
@@ -128,9 +131,9 @@ class UpdateTaskUseCaseTest extends TestCase
             ->setDescription("Description 1")
             ->setStatus(Status::Pending);
 
-        $this->taskRepository->method('findById')->willReturn($existingTask);
+        $this->taskRepositoryInterface->method('findById')->willReturn($existingTask);
 
-        $this->taskRepository
+        $this->taskRepositoryInterface
             ->method('save')
             ->will($this->throwException(new \Exception('Database error', Response::HTTP_INTERNAL_SERVER_ERROR)));
 

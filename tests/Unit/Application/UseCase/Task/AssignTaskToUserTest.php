@@ -4,22 +4,25 @@ namespace App\Tests\Unit\Application\Task;
 
 use App\Application\UseCase\Task\AssignTaskToUser\AssignTaskToUserUseCase;
 use App\Application\UseCase\Task\AssignTaskToUser\AssignTaskToUserRequest;
-use App\Infrastructure\Repository\MySqlTaskRepository;
-use App\Infrastructure\Repository\MySqlUserRepository;
 use App\Domain\Model\Task;
 use App\Domain\Model\User;
+use App\Domain\Repository\TaskRepositoryInterface;
+use App\Domain\Repository\UserRepositoryInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class AssignTaskToUserTest extends TestCase
 {
-    private $taskRepository;
-    private $userRepository;
+    /** @var TaskRepositoryInterface&MockObject */
+    private $taskRepositoryInterface;
+    /** @var UserRepositoryInterface&MockObject */
+    private $userRepositoryInterface;
 
     protected function setUp(): void
     {
-        $this->taskRepository = $this->createMock(MySqlTaskRepository::class);
-        $this->userRepository = $this->createMock(MySqlUserRepository::class);
+        $this->taskRepositoryInterface = $this->createMock(TaskRepositoryInterface::class);
+        $this->userRepositoryInterface = $this->createMock(UserRepositoryInterface::class);
     }
 
     /** 
@@ -34,24 +37,24 @@ class AssignTaskToUserTest extends TestCase
         $task = $this->createMock(Task::class);
         $user = $this->createMock(User::class);
 
-        $this->taskRepository
+        $this->taskRepositoryInterface
             ->expects($this->once())
             ->method('findById')
             ->with($taskId)
             ->willReturn($task);
 
-        $this->userRepository
+        $this->userRepositoryInterface
             ->expects($this->once())
             ->method('findById')
             ->with($userId)
             ->willReturn($user);
 
-        $this->taskRepository
+        $this->taskRepositoryInterface
             ->expects($this->once())
             ->method('save')
             ->with($task);
 
-        $useCase = new AssignTaskToUserUseCase($this->taskRepository, $this->userRepository);
+        $useCase = new AssignTaskToUserUseCase($this->taskRepositoryInterface, $this->userRepositoryInterface);
         $request = new AssignTaskToUserRequest($taskId, $userId);
         $response = $useCase->execute($request);
 
@@ -67,17 +70,17 @@ class AssignTaskToUserTest extends TestCase
         $taskId = 'task-uuid';
         $userId = 'user-uuid';
 
-        $this->taskRepository
+        $this->taskRepositoryInterface
             ->expects($this->once())
             ->method('findById')
             ->with($taskId)
             ->willReturn(null);
 
-        $this->userRepository
+        $this->userRepositoryInterface
             ->expects($this->never())
             ->method('findById');
 
-        $useCase = new AssignTaskToUserUseCase($this->taskRepository, $this->userRepository);
+        $useCase = new AssignTaskToUserUseCase($this->taskRepositoryInterface, $this->userRepositoryInterface);
         $request = new AssignTaskToUserRequest($taskId, $userId);
         $response = $useCase->execute($request);
 
@@ -95,23 +98,23 @@ class AssignTaskToUserTest extends TestCase
 
         $task = $this->createMock(Task::class);
 
-        $this->taskRepository
+        $this->taskRepositoryInterface
             ->expects($this->once())
             ->method('findById')
             ->with($taskId)
             ->willReturn($task);
 
-        $this->userRepository
+        $this->userRepositoryInterface
             ->expects($this->once())
             ->method('findById')
             ->with($userId)
             ->willReturn(null);
 
-        $this->taskRepository
+        $this->taskRepositoryInterface
             ->expects($this->never())
             ->method('save');
 
-        $useCase = new AssignTaskToUserUseCase($this->taskRepository, $this->userRepository);
+        $useCase = new AssignTaskToUserUseCase($this->taskRepositoryInterface, $this->userRepositoryInterface);
         $request = new AssignTaskToUserRequest($taskId, $userId);
         $response = $useCase->execute($request);
 
@@ -130,19 +133,19 @@ class AssignTaskToUserTest extends TestCase
         $task = $this->createMock(Task::class);
         $user = $this->createMock(User::class);
 
-        $this->taskRepository
+        $this->taskRepositoryInterface
             ->method('findById')
             ->willReturn($task);
 
-        $this->userRepository
+        $this->userRepositoryInterface
             ->method('findById')
             ->willReturn($user);
             
-        $this->taskRepository
+        $this->taskRepositoryInterface
             ->method('save')
             ->will($this->throwException(new \Exception('Database error', Response::HTTP_INTERNAL_SERVER_ERROR)));
 
-        $useCase = new AssignTaskToUserUseCase($this->taskRepository, $this->userRepository);
+        $useCase = new AssignTaskToUserUseCase($this->taskRepositoryInterface, $this->userRepositoryInterface);
         $request = new AssignTaskToUserRequest($taskId, $userId);
         $response = $useCase->execute($request);
 

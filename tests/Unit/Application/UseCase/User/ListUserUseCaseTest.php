@@ -3,18 +3,20 @@
 namespace App\Tests\Unit\Application\UseCase\User;
 
 use App\Application\UseCase\User\ListUser\ListUserUseCase;
-use App\Infrastructure\Repository\MySqlUserRepository;
 use App\Domain\Model\User;
+use App\Domain\Repository\UserRepositoryInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class ListUserUseCaseTest extends TestCase
 {
-    private $userRepository;
+    /** @var UserRepositoryInterface&MockObject */
+    private $userRepositoryInterface;
 
     protected function setUp(): void
     {
-        $this->userRepository = $this->createMock(MySqlUserRepository::class);
+        $this->userRepositoryInterface = $this->createMock(UserRepositoryInterface::class);
     }
 
     /**
@@ -25,12 +27,12 @@ class ListUserUseCaseTest extends TestCase
         $user1 = $this->createMock(User::class);
         $user2 = $this->createMock(User::class);
 
-        $this->userRepository
+        $this->userRepositoryInterface
             ->expects($this->once())
             ->method('findAll')
             ->willReturn([$user1, $user2]);
 
-        $useCase = new ListUserUseCase($this->userRepository);
+        $useCase = new ListUserUseCase($this->userRepositoryInterface);
         $response = $useCase->execute();
 
         $this->assertEquals('Users obtained successfully', $response->getMessage());
@@ -43,12 +45,12 @@ class ListUserUseCaseTest extends TestCase
      */
     public function testNoUsersFound(): void
     {
-        $this->userRepository
+        $this->userRepositoryInterface
             ->expects($this->once())
             ->method('findAll')
             ->willReturn([]);
 
-        $useCase = new ListUserUseCase($this->userRepository);
+        $useCase = new ListUserUseCase($this->userRepositoryInterface);
         $response = $useCase->execute();
 
         $this->assertEquals('No users found', $response->getMessage());
@@ -61,11 +63,11 @@ class ListUserUseCaseTest extends TestCase
      */
     public function testExceptionDuringFetch(): void
     {
-        $this->userRepository
+        $this->userRepositoryInterface
             ->method('findAll')
             ->will($this->throwException(new \Exception('Database error', Response::HTTP_INTERNAL_SERVER_ERROR)));
 
-        $useCase = new ListUserUseCase($this->userRepository);
+        $useCase = new ListUserUseCase($this->userRepositoryInterface);
         $response = $useCase->execute();
 
         $this->assertStringContainsString('Error obtaining users: Database error', $response->getMessage());

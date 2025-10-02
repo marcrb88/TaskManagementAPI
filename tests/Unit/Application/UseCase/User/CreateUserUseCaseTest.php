@@ -4,18 +4,20 @@ namespace App\Tests\Unit\Application\UseCase\User;
 
 use App\Application\UseCase\User\CreateUser\CreateUserUseCase;
 use App\Application\UseCase\User\CreateUser\CreateUserRequest;
-use App\Infrastructure\Repository\MySqlUserRepository;
+use App\Domain\Repository\UserRepositoryInterface;
 use App\Domain\Model\User;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class CreateUserUseCaseTest extends TestCase
 {
-    private $userRepository;
+    /** @var UserRepositoryInterface&MockObject */
+    private $userRepositoryInterface;
 
     protected function setUp(): void
     {
-        $this->userRepository = $this->createMock(MySqlUserRepository::class);
+        $this->userRepositoryInterface = $this->createMock(UserRepositoryInterface::class);
     }
 
     /**
@@ -26,15 +28,14 @@ class CreateUserUseCaseTest extends TestCase
         $name = 'Marc Roige';
         $email = 'marcroige88@gmail.com';
 
-        $this->userRepository
+        $this->userRepositoryInterface
             ->expects($this->once())
             ->method('save')
             ->with($this->isInstanceOf(User::class));
 
-        $useCase = new CreateUserUseCase($this->userRepository);
-        $request = $this->createMock(CreateUserRequest::class);
-        $request->method('getName')->willReturn($name);
-        $request->method('getEmail')->willReturn($email);
+        $useCase = new CreateUserUseCase($this->userRepositoryInterface);
+        
+        $request = new CreateUserRequest($name, $email);
 
         $response = $useCase->execute($request);
 
@@ -53,16 +54,15 @@ class CreateUserUseCaseTest extends TestCase
         $name = 'Farmapremium';
         $email = 'farmapremium@gmail.com';
 
-        $this->userRepository
+        $this->userRepositoryInterface
             ->method('save')
             ->will($this->throwException(new \Exception('Database error', Response::HTTP_INTERNAL_SERVER_ERROR)));
 
-        $useCase = new CreateUserUseCase($this->userRepository);
-        $request = $this->createMock(CreateUserRequest::class);
-        $request->method('getName')->willReturn($name);
-        $request->method('getEmail')->willReturn($email);
+        $useCase = new CreateUserUseCase($this->userRepositoryInterface);
+        $request = new CreateUserRequest($name, $email);
 
         $response = $useCase->execute($request);
+
 
         $this->assertStringContainsString('Error creating user: Database error', $response->getMessage());
         $this->assertEquals(Response::HTTP_INTERNAL_SERVER_ERROR, $response->getCodeStatus());

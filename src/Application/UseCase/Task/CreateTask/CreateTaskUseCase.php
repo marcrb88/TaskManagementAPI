@@ -5,23 +5,25 @@ namespace App\Application\UseCase\Task\CreateTask;
 use App\Infrastructure\Repository\MySqlTaskRepository;
 use App\Application\UseCase\Task\CreateTask\CreateTaskResponse;
 use App\Domain\Model\Task;
+use App\Domain\Repository\TaskRepositoryInterface;
+use App\Domain\Repository\UserRepositoryInterface;
 use App\Infrastructure\Repository\MySqlUserRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Exception;
 
 class CreateTaskUseCase
 {
-    private MySqlTaskRepository $taskRepository;
-    private MySqlUserRepository $userRepository;
+    private TaskRepositoryInterface $taskRepositoryInterface;
+    private UserRepositoryInterface $userRepositoryInterface;
 
     public function __construct
     (
-        MySqlTaskRepository $taskRepository,
-        MySqlUserRepository $userRepository
+        TaskRepositoryInterface $taskRepositoryInterface,
+        UserRepositoryInterface $userRepositoryInterface
     )
     {
-        $this->taskRepository = $taskRepository;
-        $this->userRepository = $userRepository;
+        $this->taskRepositoryInterface = $taskRepositoryInterface;
+        $this->userRepositoryInterface = $userRepositoryInterface;
     }
 
     public function execute(CreateTaskRequest $createTaskRequest): CreateTaskResponse
@@ -39,7 +41,7 @@ class CreateTaskUseCase
             ->setUpdatedAt($createTaskRequest->getUpdatedAt());
             
         if ($createTaskRequest->getAssignedTo()) {
-            $user = $this->userRepository->findById($createTaskRequest->getAssignedTo());
+            $user = $this->userRepositoryInterface->findById($createTaskRequest->getAssignedTo());
             if (empty($user)) {
                 $createTaskResponse->setCodeStatus(Response::HTTP_NOT_FOUND);
                 $createTaskResponse->setMessage('User not found.');
@@ -50,7 +52,7 @@ class CreateTaskUseCase
         }
 
         try {
-            $this->taskRepository->save($task);
+            $this->taskRepositoryInterface->save($task);
         } catch (Exception $e) {
             $createTaskResponse->setCodeStatus(Response::HTTP_INTERNAL_SERVER_ERROR);
             $createTaskResponse->setMessage(

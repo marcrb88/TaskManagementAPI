@@ -2,20 +2,21 @@
 
 namespace App\Application\UseCase\User\ListUser;
 
+use App\Domain\Repository\UserRepositoryInterface;
 use App\Infrastructure\Repository\MySqlUserRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 class ListUserUseCase
 {
-    private MySqlUserRepository $userRepository;
+    private UserRepositoryInterface $userRepositoryInterface;
 
     public function __construct
     (
-        MySqlUserRepository $userRepository
+        UserRepositoryInterface $userRepositoryInterface
     )
     {
-        $this->userRepository = $userRepository;
+        $this->userRepositoryInterface = $userRepositoryInterface;
     }
 
     public function execute(): ListUserResponse
@@ -24,7 +25,7 @@ class ListUserUseCase
         $listUserResponse->setCodeStatus(Response::HTTP_OK);
 
         try {
-            $users = $this->userRepository->findAll();
+            $users = $this->userRepositoryInterface->findAll();
         } catch (Throwable $e) {
             $listUserResponse->setCodeStatus($e->getCode() ?: Response::HTTP_INTERNAL_SERVER_ERROR);
             $listUserResponse->setMessage('Error obtaining users: ' . $e->getMessage());

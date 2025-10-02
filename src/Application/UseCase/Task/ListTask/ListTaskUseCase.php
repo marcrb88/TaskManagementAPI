@@ -2,22 +2,22 @@
 
 namespace App\Application\UseCase\Task\ListTask;
 
-use App\Infrastructure\Repository\MySqlTaskRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 use App\Application\UseCase\Task\ListTask\CreateFilterRequest;
 use App\Application\UseCase\Task\ListTask\ListTaskResponse;
+use App\Domain\Repository\TaskRepositoryInterface;
 
 class ListTaskUseCase
 {
-    private MySqlTaskRepository $taskRepository;
+    private TaskRepositoryInterface $taskRepositoryInterface;
 
     public function __construct
     (
-        MySqlTaskRepository $taskRepository
+        TaskRepositoryInterface $taskRepositoryInterface
     )
     {
-        $this->taskRepository = $taskRepository;
+        $this->taskRepositoryInterface = $taskRepositoryInterface;
     }
 
     public function execute(CreateFilterRequest $filterRequest): ListTaskResponse
@@ -32,9 +32,9 @@ class ListTaskUseCase
             });
             // If there are filters, use them to find tasks, otherwise get all tasks
             if (!empty($filters)) {
-                $tasks = $this->taskRepository->findByFilters($filters);
+                $tasks = $this->taskRepositoryInterface->findByFilters($filters);
             } else {
-                $tasks = $this->taskRepository->findAll();
+                $tasks = $this->taskRepositoryInterface->findAll();
             }
         } catch (Throwable $e) {
             $listTaskResponse->setCodeStatus($e->getCode() ?: Response::HTTP_INTERNAL_SERVER_ERROR);

@@ -4,18 +4,20 @@ namespace App\Tests\Unit\Application\UseCase\Task;
 
 use App\Application\UseCase\Task\DeleteTask\DeleteTaskUseCase;
 use App\Application\UseCase\Task\DeleteTask\DeleteTaskRequest;
-use App\Infrastructure\Repository\MySqlTaskRepository;
 use App\Domain\Model\Task;
+use App\Domain\Repository\TaskRepositoryInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class DeleteTaskUseCaseTest extends TestCase
 {
-    private $taskRepository;
+    /** @var TaskRepositoryInterface&MockObject */
+    private $taskRepositoryInterface;
 
     protected function setUp(): void
     {
-        $this->taskRepository = $this->createMock(MySqlTaskRepository::class);
+        $this->taskRepositoryInterface = $this->createMock(TaskRepositoryInterface::class);
     }
 
     /**
@@ -26,18 +28,18 @@ class DeleteTaskUseCaseTest extends TestCase
         $taskId = 'task-uuid';
         $task = $this->createMock(Task::class);
 
-        $this->taskRepository
+        $this->taskRepositoryInterface
             ->expects($this->once())
             ->method('findOneBy')
             ->with(['id' => $taskId, 'status' => 'pending'])
             ->willReturn($task);
 
-        $this->taskRepository
+        $this->taskRepositoryInterface
             ->expects($this->once())
             ->method('delete')
             ->with($task);
 
-        $useCase = new DeleteTaskUseCase($this->taskRepository);
+        $useCase = new DeleteTaskUseCase($this->taskRepositoryInterface);
         $request = new DeleteTaskRequest($taskId);
         $response = $useCase->execute($request);
 
@@ -52,17 +54,17 @@ class DeleteTaskUseCaseTest extends TestCase
     {
         $taskId = 'task-uuid';
 
-        $this->taskRepository
+        $this->taskRepositoryInterface
             ->expects($this->once())
             ->method('findOneBy')
             ->with(['id' => $taskId, 'status' => 'pending'])
             ->willReturn(null);
 
-        $this->taskRepository
+        $this->taskRepositoryInterface
             ->expects($this->never())
             ->method('delete');
 
-        $useCase = new DeleteTaskUseCase($this->taskRepository);
+        $useCase = new DeleteTaskUseCase($this->taskRepositoryInterface);
         $request = new DeleteTaskRequest($taskId);
         $response = $useCase->execute($request);
 
@@ -78,15 +80,15 @@ class DeleteTaskUseCaseTest extends TestCase
         $taskId = 'task-uuid';
         $task = $this->createMock(Task::class);
 
-        $this->taskRepository
+        $this->taskRepositoryInterface
             ->method('findOneBy')
             ->willReturn($task);
 
-        $this->taskRepository
+        $this->taskRepositoryInterface
             ->method('delete')
             ->will($this->throwException(new \Exception('Database error', Response::HTTP_INTERNAL_SERVER_ERROR)));
 
-        $useCase = new DeleteTaskUseCase($this->taskRepository);
+        $useCase = new DeleteTaskUseCase($this->taskRepositoryInterface);
         $request = new DeleteTaskRequest($taskId);
         $response = $useCase->execute($request);
 
