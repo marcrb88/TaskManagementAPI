@@ -31,7 +31,7 @@ cd ~/TaskManagementAPI
 ### Up containers with docker compose
 
 ```bash
-docker compose up -d
+docker compose up -d --build
 ```
 ### Install composer 
 
