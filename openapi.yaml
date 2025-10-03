@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Task Management API
-  description: REST API to manage tasks
+  description: REST API to allow creating, listing, updating and deleting tasks, as well as assigning them to users.
   version: "1.0.0"
 
 servers:
