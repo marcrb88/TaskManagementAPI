@@ -33,6 +33,11 @@ cd ~/TaskManagementAPI
 ```bash
 docker compose up -d
 ```
+### Install composer 
+
+```bash
+docker compose exec php-app composer install
+```
 
 ### Run database migrations
 

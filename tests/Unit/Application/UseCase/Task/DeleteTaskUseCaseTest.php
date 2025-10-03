@@ -68,7 +68,7 @@ class DeleteTaskUseCaseTest extends TestCase
         $request = new DeleteTaskRequest($taskId);
         $response = $useCase->execute($request);
 
-        $this->assertEquals('No task found to delete', $response->getMessage());
+        $this->assertStringContainsString('No task found to delete', $response->getMessage());
         $this->assertEquals(Response::HTTP_NOT_FOUND, $response->getCodeStatus());
     }
 

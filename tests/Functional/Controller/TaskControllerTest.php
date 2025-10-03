@@ -26,7 +26,7 @@ class TaskControllerTest extends WebTestCase
             "status" => "pending",
             "priority"=>"high",
             "createdAt" =>"2025-09-27T22:30:00",
-            "assignedTo" => "01999007-8209-7064-b19b-e1d4559c1e4a"
+            "assignedTo" => null
         ];
 
         $this->client->request(
@@ -184,7 +184,7 @@ class TaskControllerTest extends WebTestCase
     }
 
     /**
-     * Test assigning a task to an user scenario.
+     * Test assigning a task to a user scenario.
      */
     public function testAssignTaskToUser(): void
     {
@@ -206,7 +206,24 @@ class TaskControllerTest extends WebTestCase
         $createResponse = json_decode($this->client->getResponse()->getContent(), true);
         $taskId = $createResponse['id'];
 
-        $assignPayload = ['assignedTo' => '01999007-8209-7064-b19b-e1d4559c1e4a'];
+        $userPayload = [
+            'name' => 'Test User',
+            'email' => 'user_'.uniqid().'@example.com'
+        ];
+
+        $this->client->request(
+            'POST',
+            '/api/users',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($userPayload)
+        );
+
+        $userResponse = json_decode($this->client->getResponse()->getContent(), true);
+        $userId = $userResponse['id'];
+
+        $assignPayload = ['assignedTo' => $userId];
 
         $this->client->request(
             'PATCH',
