@@ -22,6 +22,12 @@ REST API to allow creating, listing, updating and deleting tasks, as well as ass
 git clone https://github.com/marcrb88/TaskManagementAPI.git
 ```
 
+### Change current directory to the project
+
+```bash
+cd ~/TaskManagementAPI
+```
+
 ### Up containers with docker compose
 
 ```bash

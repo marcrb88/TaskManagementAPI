@@ -1,5 +1,5 @@
 services:
-  app:
+ php-app:
     build: .
     container_name: php-app
     working_dir: /var/www/symfony
