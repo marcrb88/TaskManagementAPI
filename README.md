@@ -43,6 +43,10 @@ The detailed API documentation was created using OpenAPI/Swagger and can be acce
 | DELETE | api/tasks/{id}        | Delete a task                      |
 | PATCH  | api/tasks/{id}/assign | Assign a task to a user            |
 
+## Postman Collection
+
+You can download the Postman collection to test the API following this link. Once downloaded, you can import it in Postman.
+[Download Postman Collection](./TaskManagementAPIPostman.postman_collection.json)
 
 ## Technical decisions
 
