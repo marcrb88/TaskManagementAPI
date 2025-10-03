@@ -32,6 +32,14 @@ class CreateUserUseCase
             $request->getEmail()
         );
 
+        $existingUser = $this->userRepositoryInterface->findByEmail($user->getEmail());
+
+        if (!empty($existingUser)) {
+            $createUserResponse->setMessage("User with this email already exists.");
+            $createUserResponse->setCodeStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+            return $createUserResponse;
+        }
+
         //Save user entity in database
         try {
             $this->userRepositoryInterface->save($user);

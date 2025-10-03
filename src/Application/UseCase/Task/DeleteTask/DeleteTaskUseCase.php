@@ -3,7 +3,6 @@
 namespace App\Application\UseCase\Task\DeleteTask;
 
 use App\Domain\Repository\TaskRepositoryInterface;
-use App\Infrastructure\Repository\MySqlTaskRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
@@ -31,7 +30,7 @@ class DeleteTaskUseCase
             ]);
             
             if (empty($task)) {
-                $deleteTaskResponse->setMessage('No task found to delete');
+                $deleteTaskResponse->setMessage('No task found to delete. Remember you only can delete pending tasks');
                 $deleteTaskResponse->setCodeStatus(Response::HTTP_NOT_FOUND);
                 return $deleteTaskResponse;
             }

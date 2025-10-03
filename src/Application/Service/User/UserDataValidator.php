@@ -3,17 +3,10 @@
 namespace App\Application\Service\User;
 
 use App\Application\Service\Response\DataValidatorResponse;
-use App\Domain\Repository\UserRepositoryInterface;
 use App\Domain\Repository\DataValidatorInterface;
 
 class UserDataValidator implements DataValidatorInterface
 {
-    public function __construct
-    (
-        private UserRepositoryInterface $userRepository
-    ) {
-        $this->userRepository = $userRepository;
-    }
 
     public function validate(array $data): DataValidatorResponse
     {
@@ -28,13 +21,6 @@ class UserDataValidator implements DataValidatorInterface
         if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
             $dataValidatorResponse->setIsValid(false);
             $dataValidatorResponse->setMessage('Email is not valid.');
-            return $dataValidatorResponse;
-        }
-
-        $existingUser = $this->userRepository->findByEmail($data['email']);
-        if ($existingUser) {
-            $dataValidatorResponse->setIsValid(false);
-            $dataValidatorResponse->setMessage('Email is already in use.');
             return $dataValidatorResponse;
         }
 

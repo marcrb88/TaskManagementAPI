@@ -21,7 +21,7 @@ class UserControllerTest extends WebTestCase
     {
         $payload = [
             "name" => "Marc Roige Benaiges",
-            "email" => "last@gmail.com"
+            "email" => uniqid() . "@gmail.com"
         ];
 
         $this->client->request(
@@ -42,6 +42,35 @@ class UserControllerTest extends WebTestCase
         $this->assertArrayHasKey('id', $data, 'Response should contain user id');
         $this->assertArrayHasKey('message', $data, 'Response should contain message');
         $this->assertArrayHasKey('statusCode', $data, 'Response should contain statusCode');
+    }
+
+    /**
+     * Test creating an user with an existing email.
+     */
+    public function testCreateAnExistingUser(): void
+    {
+        $payload = [
+            "name" => "Marc Roige Benaiges",
+            "email" => "marcroige88@gmail.com"
+        ];
+
+        $this->client->request(
+            'POST',
+            '/api/users',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($payload)
+        );
+
+        $response = $this->client->getResponse();
+
+        $this->assertEquals(Response::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
+
+        $data = json_decode($response->getContent(), true);
+
+        $this->assertStringContainsString('already exists', $data['message']);
+
     }
 
     /**

@@ -1,0 +1,421 @@
+openapi: 3.0.3
+info:
+  title: Task Management API
+  description: REST API to manage tasks
+  version: "1.0.0"
+
+servers:
+  - url: http://localhost:8000/api
+
+paths:
+  /users:
+    post:
+      summary: Create a new user
+      tags: [Users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateUserResponse'
+        '400':
+          description: Invalid request data
+        '422':
+          description: Email already exists
+        '500':
+          description: Internal server error
+    get:
+      summary: List all users
+      tags: [Users]
+      responses:
+        '200':
+          description: Users retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListUserResponse'
+        '404':
+          description: No users found
+        '500':
+          description: Internal server error
+
+  /tasks:
+    post:
+      summary: Create a new task
+      tags: [Tasks]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTaskRequest'
+      responses:
+        '201':
+          description: Task created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateTaskResponse'
+        '400':
+          description: Invalid request data
+        '404':
+          description: Assigned user not found
+        '500':
+          description: Internal server error
+    get:
+      summary: List tasks with filters
+      tags: [Tasks]
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+          description: Filter by task status
+        - in: query
+          name: priority
+          schema:
+            type: string
+          description: Filter by task priority
+        - in: query
+          name: assignedTo
+          schema:
+            type: string
+            format: uuid
+          description: Filter by assigned user ID
+        - in: query
+          name: dueDateFrom
+          schema:
+            type: string
+            format: date-time
+          description: Filter tasks with due date from this date
+        - in: query
+          name: dueDateTo
+          schema:
+            type: string
+            format: date-time
+          description: Filter tasks with due date until this date
+        - in: query
+          name: createdAtFrom
+          schema:
+            type: string
+            format: date-time
+          description: Filter tasks created from this date
+        - in: query
+          name: createdAtTo
+          schema:
+            type: string
+            format: date-time
+          description: Filter tasks created until this date
+      responses:
+        '200':
+          description: Tasks retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListTaskResponse'
+        '404':
+          description: No tasks found
+        '500':
+          description: Internal server error
+
+  /tasks/{id}:
+    get:
+      summary: Get task details
+      tags: [Tasks]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Task retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTaskDetailResponse'
+        '400':
+          description: Invalid task ID
+        '404':
+          description: Task not found
+        '500':
+          description: Internal server error
+    put:
+      summary: Update a task
+      tags: [Tasks]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTaskRequest'
+      responses:
+        '200':
+          description: Task updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateTaskResponse'
+        '400':
+          description: Invalid request data
+        '404':
+          description: Task not found
+        '422':
+          description: Invalid status transition
+        '500':
+          description: Internal server error
+    delete:
+      summary: Delete a task
+      tags: [Tasks]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Task deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteTaskResponse'
+        '400':
+          description: Invalid task ID
+        '404':
+          description: Task not found
+        '500':
+          description: Internal server error
+
+  /tasks/{id}/assign:
+    patch:
+      summary: Assign a task to a user
+      tags: [Tasks]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignTaskToUserRequest'
+      responses:
+        '200':
+          description: Task assigned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssignTaskToUserResponse'
+        '404':
+          description: Task or user not found
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        email:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateUserRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+      required:
+        - name
+        - email
+
+    CreateUserResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        message:
+          type: string
+        codeStatus:
+          type: integer
+
+    ListUserResponse:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        message:
+          type: string
+        codeStatus:
+          type: integer
+
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+        priority:
+          type: string
+        assignedTo:
+          $ref: '#/components/schemas/User'
+        dueDate:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreateTaskRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+        priority:
+          type: string
+        assignedTo:
+          type: string
+          format: uuid
+        dueDate:
+          type: string
+          format: date-time
+      required:
+        - title
+
+    CreateTaskResponse:
+      type: object
+      properties:
+        task:
+          $ref: '#/components/schemas/Task'
+        message:
+          type: string
+        codeStatus:
+          type: integer
+
+    ListTaskResponse:
+      type: object
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Task'
+        message:
+          type: string
+        codeStatus:
+          type: integer
+
+    GetTaskDetailResponse:
+      type: object
+      properties:
+        task:
+          $ref: '#/components/schemas/Task'
+        message:
+          type: string
+        codeStatus:
+          type: integer
+
+    UpdateTaskRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+        priority:
+          type: string
+        assignedTo:
+          type: string
+          format: uuid
+        dueDate:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    UpdateTaskResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        codeStatus:
+          type: integer
+
+    DeleteTaskResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        codeStatus:
+          type: integer
+
+    AssignTaskToUserRequest:
+      type: object
+      properties:
+        assignedToId:
+          type: string
+          format: uuid
+      required:
+        - assignedToId
+
+    AssignTaskToUserResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        codeStatus:
+          type: integer
