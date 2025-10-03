@@ -2,12 +2,10 @@
 
 namespace App\Application\UseCase\Task\CreateTask;
 
-use App\Infrastructure\Repository\MySqlTaskRepository;
 use App\Application\UseCase\Task\CreateTask\CreateTaskResponse;
 use App\Domain\Model\Task;
 use App\Domain\Repository\TaskRepositoryInterface;
 use App\Domain\Repository\UserRepositoryInterface;
-use App\Infrastructure\Repository\MySqlUserRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Exception;
 

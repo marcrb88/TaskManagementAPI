@@ -17,15 +17,27 @@ REST API to allow creating, listing, updating and deleting tasks, as well as ass
 ## Installation and running
 
 ### Clone the repository
+
+```bash
+git clone https://github.com/marcrb88/TaskManagementAPI.git
+```
+
+### Up containers with docker compose
+
 ```bash
 docker compose up -d
 ```
+
+### Run database migrations
+
 ```bash
 docker compose exec php-app bin/console doctrine:migrations:migrate
 ```
+
+### Run tests
+
 ```bash
 docker compose exec php-app bin/phpunit
-
 ```
 
 ## API Documentation
