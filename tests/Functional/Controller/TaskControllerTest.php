@@ -22,7 +22,7 @@ class TaskControllerTest extends WebTestCase
         $payload = [
             "title" => "Create Test Task",
             "description" => "Create Test Task",
-            "dueDate" => "2025-10-20T00:00:00",
+            "dueDate" => "2025-12-20T00:00:00",
             "status" => "pending",
             "priority"=>"high",
             "createdAt" =>"2025-09-27T22:30:00",
@@ -80,7 +80,7 @@ class TaskControllerTest extends WebTestCase
         $payload = [
             'title' => 'Detail Test Task',
             'description' => 'Task to test details',
-            'dueDate' => '2025-10-10T12:00:00+00:00'
+            'dueDate' => '2025-12-20T12:00:00+00:00'
         ];
 
         $this->client->request(
@@ -113,7 +113,7 @@ class TaskControllerTest extends WebTestCase
         $payload = [
             'title' => 'Update Test Task',
             'description' => 'Task to test update',
-            'dueDate' => '2025-10-10T12:00:00+00:00'
+            'dueDate' => '2025-12-20T12:00:00+00:00'
         ];
 
         $this->client->request(
@@ -158,7 +158,7 @@ class TaskControllerTest extends WebTestCase
         $payload = [
             'title' => 'Delete Test Task',
             'description' => 'Task to test deletion',
-            'dueDate' => '2025-10-10T12:00:00+00:00'
+            'dueDate' => '2025-12-20T12:00:00+00:00'
         ];
 
         $this->client->request(
@@ -191,7 +191,7 @@ class TaskControllerTest extends WebTestCase
         $payload = [
             'title' => 'Assign Test Task',
             'description' => 'Task to test assignment',
-            'dueDate' => '2025-10-10T12:00:00+00:00'
+            'dueDate' => '2025-12-20T12:00:00+00:00'
         ];
 
         $this->client->request(
