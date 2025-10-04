@@ -81,7 +81,10 @@ You can download the Postman collection to test the API following this link. Onc
 
 - DTOs implemented in order to comunicate data between layers.
 
-- Task filters implemented by query parameters in GET /api/tasks.
+- The endpoint GET /api/tasks supports optional parameters to allow the client filter the list of tasks. You can include  any combination of parameters.
+> **Note 1:** The `assignedTo` filter is currently **not available**.
+> **Note 2:** The `createdAt`, `dueDate`, and `updatedAt` filters must be passed in the `YYYY-MM-DD` format.  
+> Example: `2025-10-10`
 
 - Error responses management in every use case to return to client the specific code and message response of the operation.
 
@@ -92,6 +95,7 @@ You can download the Postman collection to test the API following this link. Onc
 
 - Implement authentication and authorization (JWT/OAuth2).
 - Pagination and sortig for task listings.
+- Improve the filtering task endpoint: allow to filter by assignedTo user. It would be implementated adding the property in the CreateFilterRequest, setting it in the CreateFilterTaskRequestBuilder and adding the condition in MySqlTaskRepository.
 - Events to notificate users (via mail for example) when tasks are assigned.
 - Integrate the API with frontend.
 - Cache with Redis for improved performance when listing tasks to improve performance in large list of tasks.

@@ -141,6 +141,16 @@ class TaskController
     {
         $id = $request->attributes->get('id');
 
+        if (empty($id)) {
+            return new JsonResponse(
+                [
+                    'message' => 'Task ID is required.',
+                    'statusCode' => Response::HTTP_BAD_REQUEST
+                ],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
         if (!Uuid::isValid($id)) {
             return new JsonResponse(
                 [

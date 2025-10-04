@@ -6,17 +6,44 @@ use App\Domain\Repository\SerializeDtoAbstract;
 use DateTime;
 use App\Domain\ValueObject\Status;
 use App\Domain\ValueObject\Priority;
-    
+
 class CreateFilterRequest extends SerializeDtoAbstract
 {
+    private ?string $title = null;
+    private ?string $description = null;
     private ?Status $status = null;
     private ?Priority $priority = null;
-    private ?string $assignedTo = null;
     public ?DateTime $dueDateFrom = null;
     public ?DateTime $dueDateTo = null;
     private ?DateTime $createdAtFrom = null;
     private ?DateTime $createdAtTo = null;
+    private ?DateTime $updatedAtFrom = null;
+    private ?DateTime $updatedAtTo = null;
 
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(?string $title = null): self
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description = null): self
+    {
+        $this->description = $description;
+
+        return $this;
+
+    }
 
     public function getStatus(): ?Status
     {
@@ -38,17 +65,6 @@ class CreateFilterRequest extends SerializeDtoAbstract
     public function setPriority(?Priority $priority = null): self
     {
         $this->priority = $priority;
-
-        return $this;
-    }
-
-    public function getAssignedTo(): ?string
-    {
-        return $this->assignedTo;
-    }
-    public function setAssignedTo(?string $assignedTo): self
-    {
-        $this->assignedTo = $assignedTo;
 
         return $this;
     }
@@ -97,6 +113,30 @@ class CreateFilterRequest extends SerializeDtoAbstract
     public function setCreatedAtTo(?DateTime $createdAtTo = null): self
     {
         $this->createdAtTo = $createdAtTo;
+
+        return $this;
+    }
+
+    public function getUpdatedAtFrom(): ?DateTime
+    {
+        return $this->updatedAtFrom;
+    }
+
+    public function setUpdatedAtFrom(?DateTime $updatedAtFrom = null): self
+    {
+        $this->updatedAtFrom = $updatedAtFrom;
+
+        return $this;
+    }
+
+    public function getUpdatedAtTo(): ?DateTime
+    {
+        return $this->updatedAtTo;
+    }
+
+    public function setUpdatedAtTo(?DateTime $updatedAtTo = null): self
+    {
+        $this->updatedAtTo = $updatedAtTo;
 
         return $this;
     }

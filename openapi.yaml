@@ -84,12 +84,6 @@ paths:
             type: string
           description: Filter by task priority
         - in: query
-          name: assignedTo
-          schema:
-            type: string
-            format: uuid
-          description: Filter by assigned user ID
-        - in: query
           name: dueDateFrom
           schema:
             type: string

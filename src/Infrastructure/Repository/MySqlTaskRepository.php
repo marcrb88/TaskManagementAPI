@@ -43,6 +43,16 @@ class MySqlTaskRepository implements TaskRepositoryInterface
         $qb->select('t')
         ->from(Task::class, 't');
 
+        if (!empty($filters['title'])) {
+            $qb->where($qb->expr()->like('t.title', ':title'))
+            ->setParameter('title', '%' . $filters['title'] . '%');
+        }
+
+        if (!empty($filters['description'])) {
+            $qb->andWhere($qb->expr()->like('t.description', ':description'))
+            ->setParameter('description', '%' . $filters['description'] . '%');
+        }
+
         if (!empty($filters['status'])) {
             $qb->andWhere('t.status = :status')
             ->setParameter('status', $filters['status']);
@@ -52,12 +62,7 @@ class MySqlTaskRepository implements TaskRepositoryInterface
             $qb->andWhere('t.priority = :priority')
             ->setParameter('priority', $filters['priority']);
         }
-
-        if (!empty($filters['assignedTo'])) {
-            $qb->andWhere('t.assignedTo = :assignedTo')
-            ->setParameter('assignedTo', $filters['assignedTo']);
-        }
-
+    
         if (!empty($filters['createdAtFrom'])) {
             $qb->andWhere('t.createdAt >= :createdAtFrom')
             ->setParameter('createdAtFrom', $filters['createdAtFrom']);
@@ -76,6 +81,16 @@ class MySqlTaskRepository implements TaskRepositoryInterface
         if (!empty($filters['dueDateTo'])) {
             $qb->andWhere('t.dueDate <= :dueDateTo')
             ->setParameter('dueDateTo', $filters['dueDateTo']);
+        }
+
+        if (!empty($filters['updatedAtFrom'])) {
+            $qb->andWhere('t.updatedAt >= :updatedAtFrom')
+            ->setParameter('updatedAtFrom', $filters['updatedAtFrom']);
+        }
+
+        if (!empty($filters['updatedAtTo'])) {
+            $qb->andWhere('t.updatedAt <= :updatedAtTo')
+            ->setParameter('updatedAtTo', $filters['updatedAtTo']);
         }
 
         return $qb->getQuery()->getResult();
