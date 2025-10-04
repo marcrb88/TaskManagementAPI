@@ -19,7 +19,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"title\": \"test\",\n  \"description\": \"test\",\n  \"dueDate\": \"2025-10-20T00:00:00\",\n  \"status\": \"pending\",\n  \"priority\": \"high\",\n  \"createdAt\": \"2025-09-27T22:30:00\",\n  \"assignedTo\": \"01999007-8209-7064-b19b-e1d4559c1e4a\"\n}",
+					"raw": "{\n  \"title\": \"postman\",\n  \"description\": \"postman\",\n  \"dueDate\": \"2025-10-20T00:00:00\",\n  \"status\": \"pending\",\n  \"priority\": \"high\",\n  \"createdAt\": \"2025-09-27T22:30:00\",\n  \"assignedTo\": \"0199ab9a-1a30-747d-803c-42e80ec90306\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -84,10 +84,12 @@
 					"raw": "{\n  \"name\": \"test\",\n  \"email\": \"mroige@viajesparati.com\",\n  \"createdAt\": \"2025-09-27T22:30:00\"\n}"
 				},
 				"url": {
-					"raw": "{{baseURL}}/api/users",
+					"raw": "http://localhost:8000/api/users",
+					"protocol": "http",
 					"host": [
-						"{{baseURL}}"
+						"localhost"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"users"
@@ -135,10 +137,12 @@
 					}
 				],
 				"url": {
-					"raw": "{{baseURL}}/api/users",
+					"raw": "http://localhost:8000/api/users",
+					"protocol": "http",
 					"host": [
-						"{{baseURL}}"
+						"localhost"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"users"
@@ -178,7 +182,19 @@
 			"name": "ListTask",
 			"request": {
 				"method": "GET",
-				"header": []
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/api/tasks",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"tasks"
+					]
+				}
 			},
 			"response": []
 		},
@@ -188,10 +204,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseURL}}/api/tasks/01999007-e452-7218-8a64-ff7c5a9ca3ba",
+					"raw": "http://localhost:8000/api/tasks/01999007-e452-7218-8a64-ff7c5a9ca3ba",
+					"protocol": "http",
 					"host": [
-						"{{baseURL}}"
+						"localhost"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"tasks",
@@ -208,7 +226,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"title\": \"test nou\",\n  \"description\": \"test nou.\",\n  \"priority\": \"low\",\n  \"status\": \"completed\"\n}\n",
+					"raw": "{\n  \"title\": \"test nou\",\n  \"description\": \"test nou.\",\n  \"priority\": \"low\",\n  \"status\": \"pending\"\n}\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -216,10 +234,12 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseURL}}/api/tasks/0199a0df-cbd7-74c5-a09c-0afd49c11597",
+					"raw": "http://localhost:8000/api/tasks/0199a0df-cbd7-74c5-a09c-0afd49c11597",
+					"protocol": "http",
 					"host": [
-						"{{baseURL}}"
+						"localhost"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"tasks",
@@ -235,14 +255,16 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{baseURL}}/api/tasks/01999244-7634-76a9-9c1c-aed9c79d655b",
+					"raw": "http://localhost:8000/api/tasks/0199a0d2-107a-77e5-ae87-760f2cc9fe9a",
+					"protocol": "http",
 					"host": [
-						"{{baseURL}}"
+						"localhost"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"tasks",
-						"01999244-7634-76a9-9c1c-aed9c79d655b"
+						"0199a0d2-107a-77e5-ae87-760f2cc9fe9a"
 					]
 				}
 			},
@@ -264,10 +286,12 @@
 					"raw": "{\n  \"assignedTo\": \"01999013-2f83-75e4-830e-15a560c2a6ed\"\n}"
 				},
 				"url": {
-					"raw": "{{baseURL}}/api/tasks/01999007-e452-7218-8a64-ff7c5a9ca3ba/assign",
+					"raw": "http://localhost:8000/api/tasks/01999007-e452-7218-8a64-ff7c5a9ca3ba/assign",
+					"protocol": "http",
 					"host": [
-						"{{baseURL}}"
+						"localhost"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"tasks",
