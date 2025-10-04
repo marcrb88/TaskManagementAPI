@@ -83,7 +83,8 @@ You can download the Postman collection to test the API following this link. Onc
 
 - The endpoint GET /api/tasks supports optional parameters to allow the client filter the list of tasks. You can include  any combination of parameters.
 > **Note 1:** The `assignedTo` filter is currently **not available**.
-> **Note 2:** The `createdAt`, `dueDate`, and `updatedAt` filters must be passed in the `YYYY-MM-DD` format.  
+
+> **Note 2:** In task list filters, the `createdAt`, `dueDate`, and `updatedAt` filters must be passed in the `YYYY-MM-DD` format.  
 > Example: `2025-10-10`
 
 - Error responses management in every use case to return to client the specific code and message response of the operation.
