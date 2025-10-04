@@ -189,8 +189,8 @@ class TaskControllerTest extends WebTestCase
     public function testAssignTaskToUser(): void
     {
         $payload = [
-            'title' => 'Assign Test Task',
-            'description' => 'Task to test assignment',
+            'title' => 'Test to check datetime',
+            'description' => 'Test to check datetime description',
             'dueDate' => '2025-12-20T12:00:00+00:00'
         ];
 
