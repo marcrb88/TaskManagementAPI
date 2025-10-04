@@ -100,7 +100,7 @@ You can download the Postman collection to test the API following this link. Onc
 - Events to notificate users (via mail for example) when tasks are assigned.
 - Integrate the API with frontend.
 - Cache with Redis for improved performance when listing tasks to improve performance in large list of tasks.
-- In definitive, the optional bonus points that suggests the technical test.
+- Upload my environment variables in AWS SSM (Systems Manager Parameter Store) to avoid having credentials in GitHub repository.
 
 
 
